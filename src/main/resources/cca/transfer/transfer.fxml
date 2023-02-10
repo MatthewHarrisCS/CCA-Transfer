@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox prefHeight="600.0" prefWidth="765.0" spacing="20.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cca.transfer.TransferController">
+   <children>
+      <GridPane alignment="BOTTOM_RIGHT" maxWidth="1.7976931348623157E308" prefHeight="56.0" prefWidth="293.0">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="369.0" minWidth="10.0" prefWidth="225.0" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="568.0" minWidth="10.0" prefWidth="500.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <Label minHeight="-Infinity" minWidth="-Infinity" prefWidth="226.0" text="LifeCalc Transfer&#10;Table Generator">
+               <font>
+                  <Font name="Californian FB" size="24.0" />
+               </font>
+            </Label>
+            <Label fx:id="status" alignment="BOTTOM_RIGHT" wrapText="true" GridPane.columnIndex="1">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+         </children>
+      </GridPane>
+      <TabPane side="BOTTOM" tabClosingPolicy="UNAVAILABLE">
+         <tabs>
+            <Tab text="Residents">
+               <content>
+                  <TableView fx:id="residentTable" prefHeight="2000.0">
+                    <columns>
+                      <TableColumn fx:id="refNo" prefWidth="75.0" text="Ref #" />
+                      <TableColumn fx:id="last" prefWidth="75.0" text="Last" />
+                      <TableColumn fx:id="first" prefWidth="75.0" text="First" />
+                      <TableColumn fx:id="unitNo" prefWidth="75.0" text="Unit #" />
+                      <TableColumn fx:id="unitType" prefWidth="75.0" text="Unit Type" />
+                      <TableColumn fx:id="sex1" text="Sex of 1st" />
+                      <TableColumn fx:id="sex2" text="Sex of 2nd" />
+                      <TableColumn fx:id="birthDate1" prefWidth="110.0" text="Birth date of 1st" />
+                      <TableColumn fx:id="birthDate2" prefWidth="110.0" text="Birth date of 2nd" />
+                      <TableColumn fx:id="entryDate1" prefWidth="110.0" text="Entry date of 1st" />
+                      <TableColumn fx:id="entryDate2" prefWidth="110.0" text="Entry date of 2nd" />
+                      <TableColumn fx:id="entryFee1" prefWidth="100.0" text="Entry fee of 1st" />
+                      <TableColumn fx:id="entryFee2" prefWidth="100.0" text="Entry fee of 2nd" />
+                      <TableColumn fx:id="deathDate1" prefWidth="110.0" text="Death date of 1st" />
+                      <TableColumn fx:id="deathDate2" prefWidth="110.0" text="Death date of 2nd" />
+                      <TableColumn fx:id="termDate1" prefWidth="120.0" text="Termin date of 1st" />
+                      <TableColumn fx:id="termDate2" prefWidth="120.0" text="Termin date of 2nd" />
+                      <TableColumn fx:id="nonrefFee1" prefWidth="120.0" text="Nonref entry of 1st" />
+                      <TableColumn fx:id="nonrefFee2" prefWidth="120.0" text="Nonref entry of 2nd" />
+                      <TableColumn fx:id="refundFee1" prefWidth="140.0" text="Refund entry fee of 1st" />
+                      <TableColumn fx:id="refundFee2" prefWidth="140.0" text="Refund entry fee of 2nd" />
+                      <TableColumn fx:id="comFee1" prefWidth="210.0" text="Commission on fee for 1st insured" />
+                      <TableColumn fx:id="comFee2" prefWidth="210.0" text="Commission on fee for 2nd insured" />
+                      <TableColumn fx:id="decline" prefWidth="110.0" text="Declining refund?" />
+                      <TableColumn fx:id="fso" prefWidth="130.0" text="Special FSO Indicator" />
+                      <TableColumn fx:id="contract" prefWidth="90.0" text="Contract type" />
+                    </columns>
+                  </TableView>
+               </content>
+            </Tab>
+            <Tab text="Transfers">
+               <content>
+                  <TableView fx:id="transferTable" centerShape="false" prefHeight="2000.0" scaleShape="false">
+                     <columns>
+                        <TableColumn fx:id="transferRefNo" prefWidth="40.0" text="Ref #" />
+                        <TableColumn fx:id="transferLast" prefWidth="100.0" text="Last" />
+                        <TableColumn fx:id="transferFirst" prefWidth="125.0" text="First" />
+                        <TableColumn fx:id="res" prefWidth="40.0" text="Res" />
+                        <TableColumn fx:id="into" prefWidth="40.0" text="Into" />
+                        <TableColumn fx:id="date" prefWidth="100.0" text="Date" />
+                     </columns>
+                  </TableView>
+               </content>
+            </Tab>
+         </tabs>
+      </TabPane>
+      <HBox alignment="CENTER">
+         <children>
+            <Button onAction="#importSpreadsheet" text="Import Database">
+               <HBox.margin>
+                  <Insets right="10.0" />
+               </HBox.margin>
+            </Button>
+            <Button fx:id="exportButton" disable="true" mnemonicParsing="false" onAction="#export" text="Export to LC Database">
+               <HBox.margin>
+                  <Insets right="10.0" />
+               </HBox.margin></Button>
+            <Button fx:id="copyResidentsButton" disable="true" mnemonicParsing="false" onAction="#copyResidents" text="Copy 'Residents'">
+               <HBox.margin>
+                  <Insets right="10.0" />
+               </HBox.margin>
+            </Button>
+            <Button fx:id="copyTransfersButton" disable="true" layoutX="308.0" layoutY="10.0" mnemonicParsing="false" onAction="#copyTransfers" text="Copy 'Transfers'">
+               <HBox.margin>
+                  <Insets right="10.0" />
+               </HBox.margin>
+            </Button>
+            <Button onAction="#info" mnemonicParsing="false" text="Info">
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+            </Button>
+         </children>
+      </HBox>
+      <FlowPane alignment="CENTER" columnHalignment="CENTER">
+         <children>
+            <ImageView fitHeight="60.0" fitWidth="146.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@CCA-Logo.png" />
+               </image>
+            </ImageView>
+         </children>
+      </FlowPane>
+   </children>
+   <padding>
+      <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+   </padding>
+</VBox>
