@@ -89,13 +89,9 @@ public class TransferController implements Initializable {
     ObservableList<Resident> residentList = FXCollections.observableArrayList();
     ObservableList<TransferResident> transferList = FXCollections.observableArrayList();
     /*
-     * 
-     * 
-     *   TO DO
+     * TO DO
      * 4 and 5 Level radio buttons
      * Decline steps in the info tab
-     * 
-     * 
      */
 
     @Override
@@ -143,9 +139,12 @@ public class TransferController implements Initializable {
 
     }
     
+    // importSpreadsheet(): open the spreadsheet containing the resident data
+    //                      and convert it into the table format
     @FXML
     private void importSpreadsheet() {
 
+        // Set the FileChooser to get the requested .xlsx file
         status.setText("Importing...");
         FileChooser fc = new FileChooser();
         fc.setTitle("Import Database");
@@ -153,26 +152,33 @@ public class TransferController implements Initializable {
         File home = new File(System.getProperty("user.dir"));
         fc.setInitialDirectory(home);
         try {
+
+            // Get the spreadsheet from the user and open the INPUT sheet
             FileInputStream excel = new FileInputStream(fc.showOpenDialog(transferTable.getScene().getWindow()));
             XSSFWorkbook workbook = new XSSFWorkbook(excel);
             XSSFSheet sheet = workbook.getSheet("INPUT");
             
+            // Call the function to import the Residents and transfer tables
             importResidents(sheet);
-            importTransfers(sheet);
 
+            // Close the stream to the spreadsheet
             workbook.close();
             excel.close();
-            
+
+            // Write success message and give user access to the function buttons.
             status.setText("Database imported successfully");
             copyTransfersButton.setDisable(false);
             copyResidentsButton.setDisable(false);
             exportButton.setDisable(false);
 
         } catch (IOException|NullPointerException|IllegalStateException e) {
+            // If exception, print message to status
             status.setText("" + e);
         }
     }
 
+    // importResidents(): access the resident data and add it to a Resident
+    //                    data entry to display in the Resident table
     private void importResidents(XSSFSheet sheet) {
 
         residentList.clear();
@@ -194,7 +200,11 @@ public class TransferController implements Initializable {
         double comFee1;
         int decline;
         int contract;
-        Date bd1, bd2, ed1, ed2, dd1, dd2, td1, td2;
+        LocalDate transfer1to2;
+        LocalDate transfer1to3;
+        LocalDate transfer2to2;
+        LocalDate transfer2to3;
+        Date bd1, bd2, ed1, ed2, dd1, dd2, td1, td2, t12, t13, t22, t23;
 
         List<Integer> declineList = getDecline(sheet.getWorkbook());
 
@@ -203,8 +213,8 @@ public class TransferController implements Initializable {
             // Get the current row: if Last Name is null, end the loop
             row = sheet.getRow(i);
 
-            System.out.println("Row " + i);
-
+            // If person 1's last name is null, end the loop 
+            // (the end of the list has been reached even if the sheet hasn't)
             if (row.getCell(1).getStringCellValue().equals("")) {
                 break;
             }
@@ -226,7 +236,7 @@ public class TransferController implements Initializable {
                 }
             }
 
-            // If the unit number is just an integer, converts to a string
+            // If the unit number is just an integer, convert to a string
             if (row.getCell(3).getCellType() == CellType.NUMERIC) {
                 unitNo = "" + (int) row.getCell(3).getNumericCellValue();
             } else {
@@ -246,6 +256,10 @@ public class TransferController implements Initializable {
             dd2 = row.getCell(18).getDateCellValue();
             td1 = row.getCell(12).getDateCellValue();
             td2 = row.getCell(19).getDateCellValue();
+            t12 = row.getCell(9).getDateCellValue();
+            t13 = row.getCell(10).getDateCellValue();
+            t22 = row.getCell(16).getDateCellValue();
+            t23 = row.getCell(17).getDateCellValue();
             
             // If the date value is not null, convert to LocalDate
             // otherwise leave null
@@ -264,6 +278,14 @@ public class TransferController implements Initializable {
             termDate1  = ((td1 == null) ? null : td1.toInstant()
                 .atZone(ZoneId.systemDefault()).toLocalDate());
             termDate2  = ((td2 == null) ? null : td2.toInstant()
+                .atZone(ZoneId.systemDefault()).toLocalDate());
+            transfer1to2  = ((t12 == null) ? null : t12.toInstant()
+                .atZone(ZoneId.systemDefault()).toLocalDate());
+            transfer1to3  = ((t13 == null) ? null : t13.toInstant()
+                .atZone(ZoneId.systemDefault()).toLocalDate());
+            transfer2to2  = ((t22 == null) ? null : t22.toInstant()
+                .atZone(ZoneId.systemDefault()).toLocalDate());
+            transfer2to3  = ((t23 == null) ? null : t23.toInstant()
                 .atZone(ZoneId.systemDefault()).toLocalDate());
 
             // Get fees for person 1 (person 2 always set to 0.0)
@@ -289,56 +311,63 @@ public class TransferController implements Initializable {
                 nonrefFee1, /* nonrefFee2 */ 0.0, 
                 refundFee1, /*refundFee2*/ 0.0, 
                 comFee1, /* comFee2 */ 0.0, 
-                decline, /* fso */ 0, contract));
+                decline, /* fso */ 0, contract,
+                transfer1to2, transfer1to3, transfer2to2, transfer2to3));
 
         }
+
+        // Import the transfers using the newly created residentList
+        importTransfers();
     }
 
-    private void importTransfers(XSSFSheet sheet) {
-
+    
+    // importTransfers(): access the residentList and add any transfers
+    //                    found into the transferList as a new entry
+    private void importTransfers() {
+        
+        // Clear the current transfer list
         transferList.clear();
-        Row row;
-        int refNo;
-        String last;
-        String first;
+        Resident resident;
 
-        for (int i = 6; i <= sheet.getLastRowNum(); i++) {
+        // Go through the entire residentList
+        for (int i = 0; i < residentList.size(); i++) {
             
-            row = sheet.getRow(i);
+            // Get the resident at the current index
+            resident = residentList.get(i);
 
-            refNo = i-5;
-            last = row.getCell(1).getStringCellValue();
-            first = row.getCell(2).getStringCellValue();
-            
-            addEntry(refNo, last, first, row, 9, 1, 2);
-            addEntry(refNo, last, first, row, 10, 1, 3);
-            addEntry(refNo, last, first, row, 16, 2, 2);
-            addEntry(refNo, last, first, row, 17, 2, 3);
+            // Call addTransfer for each of the potential transfers
+            addTransfer(resident, 1, 2, resident.transfer1to2);
+            addTransfer(resident, 1, 3, resident.transfer1to3);
+            addTransfer(resident, 2, 2, resident.transfer2to2);
+            addTransfer(resident, 2, 3, resident.transfer2to3);
 
         }
+        
     }
 
-    private void addEntry(int refNo, String last, String first, 
-                          Row row, int column, int res, int into) {
+    // addTransfer(): add an entry to transferList if the 
+    //                given transfer field exists
+    private void addTransfer(Resident resident, int res, int into, LocalDate transfer) {
         
-        LocalDate localDate;
-        Date excelDate = row.getCell(column).getDateCellValue();
-        
-        if(excelDate != null) {
-            localDate = excelDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-            transferList.add(new TransferResident(refNo, last, first, res, into, localDate));
+        // if the transfer date exists, add an entry to transferList
+        // with the information for the transferred resident
+        if (transfer != null) {
+            transferList.add(new TransferResident(resident.refNo, resident.last, resident.first, res, into, transfer));
         }
+        
     }
 
+    // copyResidents(): copy the residentList to the clipboard
     @FXML
     private void copyResidents() throws IOException {        
         
+        // Set the status message and get the clipboard
         status.setText("Copying to clipboard...");
         String db = "";
         Clipboard clip = Clipboard.getSystemClipboard();
         ClipboardContent x = new ClipboardContent();
         
-        // Adds each of the RLA values to a string with linebreaks
+        // Add each of the RLA values to a string with linebreaks
         for (int i = 0; i < residentList.size(); i++) {
             Resident resident = residentList.get(i);
             db +=
@@ -370,24 +399,26 @@ public class TransferController implements Initializable {
                 resident.getContract() + "\n";
         }
 
-        // Replaces null cells with empty cells
+        // Replace null cells with empty cells
         db = db.replace("null\t", "\t");
         
-        // Adds the RLA value string to the computer's clipboard
+        // Add the RLA value string to the clipboard
         x.putString(db);
         clip.setContent(x);
         status.setText("Copied to clipboard");
     }
 
+    // copyTransfers(): Copy the transferList to the clipboard
     @FXML
     private void copyTransfers() throws IOException {        
         
+        // Set the status message and get the clipboard
         status.setText("Copying to clipboard...");
         String db = "";
         Clipboard clip = Clipboard.getSystemClipboard();
         ClipboardContent x = new ClipboardContent();
         
-        // Adds each of the RLA values to a string with linebreaks
+        // Add each of the RLA values to a string with linebreaks
         for (int i = 0; i < transferList.size(); i++) {
             TransferResident resident = transferList.get(i);
             db +=
@@ -399,13 +430,13 @@ public class TransferController implements Initializable {
                 resident.getDate() + "\n";
         }
         
-        // Adds the RLA value string to the computer's clipboard
+        // Add the RLA value string to the clipboard
         x.putString(db);
         clip.setContent(x);
         status.setText("Copied to clipboard");
     }
 
-
+    // export(): export the resident and transfer tables to a new Excel sheet
     @FXML
     private void export() {
         
@@ -415,12 +446,21 @@ public class TransferController implements Initializable {
         fc.getExtensionFilters().add(new ExtensionFilter("Excel Files", "*.xlsx"));
         File home = new File(System.getProperty("user.dir"));
         fc.setInitialDirectory(home);
-        File excel = fc.showOpenDialog(transferTable.getScene().getWindow());
+        File excel = fc.showSaveDialog(transferTable.getScene().getWindow());
 
         try {
-            // Access and create a local copy of the spreadsheet
-            FileInputStream excelIn = new FileInputStream(excel);
-            XSSFWorkbook workbook = new XSSFWorkbook(excelIn);
+            
+            XSSFWorkbook workbook;
+
+            // Create the file if it does not currently exist
+            if (excel.createNewFile()) {
+                workbook = new XSSFWorkbook();
+            } else {
+            // Else access and create a local copy of the spreadsheet
+                FileInputStream excelIn = new FileInputStream(excel);
+                workbook = new XSSFWorkbook(excelIn);
+                excelIn.close();
+            }
             
             // Copy the values into the workbook
             exportResidents(workbook);
@@ -433,69 +473,76 @@ public class TransferController implements Initializable {
             // Close the streams and set success message
             workbook.close();
             excelOut.close();
-            excelIn.close();
             status.setText("Table exported successfully");
 
         } catch (IOException|NullPointerException e) {
+            // If exception, print message to status
             status.setText("" + e);
         }
     }
 
-    
+    // exportResidents(): create a new Excel sheet and copy 
+    //                    the ResidentList onto it
     private void exportResidents(XSSFWorkbook workbook) {
         
         XSSFSheet sheet;
         Row row;
         Resident resident;
-            
-        if (workbook.getSheet("Residents") != null) {
-            sheet = workbook.getSheet("Residents");
-        } else {
+        
+        // Create the Residents sheet if it does not exist, otherwise reformat it
+        if (workbook.getSheet("Residents") == null) {
             sheet = workbook.createSheet("Residents");
-            workbook.setSheetOrder("Residents", 0);
-            row = sheet.createRow(0);
-
-            // Set headers for the row
-            row.createCell(0).setCellValue("Ref #");
-            row.createCell(1).setCellValue("Last");
-            row.createCell(2).setCellValue("First");
-            row.createCell(3).setCellValue("Unit #");
-            row.createCell(4).setCellValue("Unit Type");
-            row.createCell(5).setCellValue("Sex of 1st");
-            row.createCell(6).setCellValue("Sex of 2nd");
-            row.createCell(7).setCellValue("Birth date of 1st");
-            row.createCell(8).setCellValue("Birth date of 2nd");
-            row.createCell(9).setCellValue("Entry date of 1st");
-            row.createCell(10).setCellValue("Entry date of 2nd");
-            row.createCell(11).setCellValue("Entry fee of 1st");
-            row.createCell(12).setCellValue("Entry fee of 2nd");
-            row.createCell(13).setCellValue("Death date of 1st");
-            row.createCell(14).setCellValue("Death date of 2nd");
-            row.createCell(15).setCellValue("Termin date of 1st");
-            row.createCell(16).setCellValue("Termin date of 2nd");
-            row.createCell(17).setCellValue("Nonref entry of 1st");
-            row.createCell(18).setCellValue("Nonref entry of 2nd");
-            row.createCell(19).setCellValue("Refund entry fee of 1st");
-            row.createCell(20).setCellValue("Refund entry fee of 2nd");
-            row.createCell(21).setCellValue("Commission on fee for 1st insured");
-            row.createCell(22).setCellValue("Commission on fee for 2nd insured");
-            row.createCell(23).setCellValue("Declining refund?");
-            row.createCell(24).setCellValue("Special FSO Indicator");
-            row.createCell(25).setCellValue("Contract type");
-            row.createCell(26).setCellValue("Misc. notes");
-
-            // Set styling for the row
-            CellStyle headerStyle = workbook.createCellStyle();
-            Font font = workbook.createFont();
-            font.setBold(true);
-            headerStyle.setFont(font);
-            headerStyle.setBorderBottom(BorderStyle.MEDIUM);
-            headerStyle.setAlignment(HorizontalAlignment.CENTER);
-            for (int i = 0; i <= 26; i++) {
-                row.getCell(i).setCellStyle(headerStyle);
+        } else {
+            sheet = workbook.getSheet("Residents");
+            for (int i = 0; i <= sheet.getLastRowNum(); i++) {
+                sheet.removeRow(sheet.getRow(i));
             }
         }
+        
+        // Move Residents to the first position and create the header row
+        workbook.setSheetOrder("Residents", 0);
+        row = sheet.createRow(0);
 
+        // Set headers for the row
+        row.createCell(0).setCellValue("Ref #");
+        row.createCell(1).setCellValue("Last");
+        row.createCell(2).setCellValue("First");
+        row.createCell(3).setCellValue("Unit #");
+        row.createCell(4).setCellValue("Unit Type");
+        row.createCell(5).setCellValue("Sex of 1st");
+        row.createCell(6).setCellValue("Sex of 2nd");
+        row.createCell(7).setCellValue("Birth date of 1st");
+        row.createCell(8).setCellValue("Birth date of 2nd");
+        row.createCell(9).setCellValue("Entry date of 1st");
+        row.createCell(10).setCellValue("Entry date of 2nd");
+        row.createCell(11).setCellValue("Entry fee of 1st");
+        row.createCell(12).setCellValue("Entry fee of 2nd");
+        row.createCell(13).setCellValue("Death date of 1st");
+        row.createCell(14).setCellValue("Death date of 2nd");
+        row.createCell(15).setCellValue("Termin date of 1st");
+        row.createCell(16).setCellValue("Termin date of 2nd");
+        row.createCell(17).setCellValue("Nonref entry of 1st");
+        row.createCell(18).setCellValue("Nonref entry of 2nd");
+        row.createCell(19).setCellValue("Refund entry fee of 1st");
+        row.createCell(20).setCellValue("Refund entry fee of 2nd");
+        row.createCell(21).setCellValue("Commission on fee for 1st insured");
+        row.createCell(22).setCellValue("Commission on fee for 2nd insured");
+        row.createCell(23).setCellValue("Declining refund?");
+        row.createCell(24).setCellValue("Special FSO Indicator");
+        row.createCell(25).setCellValue("Contract type");
+        row.createCell(26).setCellValue("Misc. notes");
+
+        // Set styling for the row
+        CellStyle headerStyle = workbook.createCellStyle();
+        Font font = workbook.createFont();
+        font.setBold(true);
+        headerStyle.setFont(font);
+        headerStyle.setBorderBottom(BorderStyle.MEDIUM);
+        headerStyle.setAlignment(HorizontalAlignment.CENTER);
+        for (int i = 0; i <= 26; i++) {
+            row.getCell(i).setCellStyle(headerStyle);
+        }
+        
         // Create format styles
         CellStyle dateStyle = workbook.createCellStyle();
         CellStyle moneyStyle = workbook.createCellStyle();
@@ -524,9 +571,10 @@ public class TransferController implements Initializable {
         sheet.setDefaultColumnStyle(21, moneyStyle);
         sheet.setDefaultColumnStyle(22, moneyStyle);
 
-        for (int i = 0; i < residentList.size(); i++) {
-            row = sheet.createRow(i+1);
-            resident = residentList.get(i);
+        // Iterate through the residentList and add each entry as an Excel row
+        for (int i = 1; i < residentList.size(); i++) {
+            row = sheet.createRow(i);
+            resident = residentList.get(i-1);
             row.createCell(0).setCellValue(resident.getRefNo());
             row.createCell(1).setCellValue(resident.getLast());
             row.createCell(2).setCellValue(resident.getFirst());
@@ -561,45 +609,53 @@ public class TransferController implements Initializable {
 
     }
 
+    // exportTransfers(): create a new Excel sheet and copy 
+    //                    the TransferList onto it
     private void exportTransfers(XSSFWorkbook workbook) {
         
         XSSFSheet sheet;
         Row row;
         TransferResident resident;
             
-        if (workbook.getSheet("Transfers") != null) {
-            sheet = workbook.getSheet("Transfers");
-        } else {
+        // Create the Transfers sheet if it does not exist, otherwise reformat it
+        if (workbook.getSheet("Transfers") == null) {
             sheet = workbook.createSheet("Transfers");
-            workbook.setSheetOrder("Transfers", 1);
-            row = sheet.createRow(0);
-
-            // Set headers for the row
-            row.createCell(0).setCellValue("Ref #");
-            row.createCell(1).setCellValue("Last");
-            row.createCell(2).setCellValue("First");
-            row.createCell(3).setCellValue("Res");
-            row.createCell(4).setCellValue("Into");
-            row.createCell(5).setCellValue("Date");
-            sheet.autoSizeColumn(0);
-            sheet.autoSizeColumn(1);
-            sheet.autoSizeColumn(2);
-            sheet.autoSizeColumn(3);
-            sheet.autoSizeColumn(4);
-            sheet.autoSizeColumn(5);
-
-            // Set styling for the row
-            CellStyle headerStyle = workbook.createCellStyle();
-            Font font = workbook.createFont();
-            font.setBold(true);
-            headerStyle.setFont(font);
-            headerStyle.setBorderBottom(BorderStyle.MEDIUM);
-            headerStyle.setAlignment(HorizontalAlignment.CENTER);
-            for (int i = 0; i <= 5; i++) {
-                row.getCell(i).setCellStyle(headerStyle);
+        } else {
+            sheet = workbook.getSheet("Transfers");
+            for (int i = 0; i <= sheet.getLastRowNum(); i++) {
+                sheet.removeRow(sheet.getRow(i));
             }
         }
 
+        // Move Transfers to the second position and create the header row
+        workbook.setSheetOrder("Transfers", 1);
+        row = sheet.createRow(0);
+
+        // Set headers for the row
+        row.createCell(0).setCellValue("Ref #");
+        row.createCell(1).setCellValue("Last");
+        row.createCell(2).setCellValue("First");
+        row.createCell(3).setCellValue("Res");
+        row.createCell(4).setCellValue("Into");
+        row.createCell(5).setCellValue("Date");
+        sheet.autoSizeColumn(0);
+        sheet.autoSizeColumn(1);
+        sheet.autoSizeColumn(2);
+        sheet.autoSizeColumn(3);
+        sheet.autoSizeColumn(4);
+        sheet.autoSizeColumn(5);
+
+        // Set styling for the row
+        CellStyle headerStyle = workbook.createCellStyle();
+        Font font = workbook.createFont();
+        font.setBold(true);
+        headerStyle.setFont(font);
+        headerStyle.setBorderBottom(BorderStyle.MEDIUM);
+        headerStyle.setAlignment(HorizontalAlignment.CENTER);
+        for (int i = 0; i <= 5; i++) {
+            row.getCell(i).setCellStyle(headerStyle);
+        }
+        
         // Create and set date formatting
         CellStyle dateStyle = workbook.createCellStyle();
         CreationHelper ch = workbook.getCreationHelper();
@@ -607,6 +663,7 @@ public class TransferController implements Initializable {
         dateStyle.setAlignment(HorizontalAlignment.CENTER);
         sheet.setDefaultColumnStyle(5, dateStyle);
 
+        // Iterate through the transferList and add each entry as an Excel row
         for (int i = 0; i < transferList.size(); i++) {
             row = sheet.createRow(i+1);
             resident = transferList.get(i);
@@ -625,6 +682,7 @@ public class TransferController implements Initializable {
 
     }
 
+    // gender(): get the correct gender index for the given character
     private int gender(String gender) {
         switch (gender) {
             case "F":
@@ -636,6 +694,7 @@ public class TransferController implements Initializable {
         }
     }
 
+    // getDecline(): create a list of contracts and if they decline
     private List<Integer> getDecline(XSSFWorkbook workbook) {
 
         // Initiate declineList and add a 0 index
@@ -656,13 +715,15 @@ public class TransferController implements Initializable {
             row = sheet.getRow(rowNo);
         }
 
+        // Return the completed list 
         return declineList;
     }
 
+    // info(): display the information window
     @FXML
     private void info() {
         try {
-            // Sets the internal error message
+            // Set the internal error message
 
             // Access the .fxml file for the dialog box
             FXMLLoader fxmlLoader = new FXMLLoader();
@@ -680,7 +741,7 @@ public class TransferController implements Initializable {
             dialog.showAndWait();
             
         } catch (IOException e) {  
-            // If error, print an error message to the window
+            // If exception, print message to status
             status.setText("DIALOG BOX ERROR: " + e.getMessage());
         }
     }
