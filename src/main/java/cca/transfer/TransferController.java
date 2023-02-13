@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.CreationHelper;
@@ -90,13 +91,9 @@ public class TransferController implements Initializable {
     /*
      * 
      * 
-     * 
      *   TO DO
      * 4 and 5 Level radio buttons
      * Decline steps in the info tab
-     * Test on Terrace input
-     * Catch IllegalStateException
-     * Line 231 Error - Cannot get a NUMERIC value from a STRING cell
      * 
      * 
      */
@@ -105,7 +102,6 @@ public class TransferController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
         // Set columns for resident table
-        
         refNo.setCellValueFactory(new PropertyValueFactory<Resident, Integer>("refNo"));
         last.setCellValueFactory(new PropertyValueFactory<Resident, String>("last"));
         first.setCellValueFactory(new PropertyValueFactory<Resident, String>("first"));
@@ -141,6 +137,7 @@ public class TransferController implements Initializable {
         into.setCellValueFactory(new PropertyValueFactory<TransferResident, Integer>("into"));
         date.setCellValueFactory(new PropertyValueFactory<TransferResident, LocalDate>("date"));
 
+        // Attach the lists to their respective table
         residentTable.setItems(residentList);
         transferTable.setItems(transferList);
 
@@ -171,7 +168,7 @@ public class TransferController implements Initializable {
             copyResidentsButton.setDisable(false);
             exportButton.setDisable(false);
 
-        } catch (IOException|NullPointerException e) {
+        } catch (IOException|NullPointerException|IllegalStateException e) {
             status.setText("" + e);
         }
     }
@@ -212,9 +209,20 @@ public class TransferController implements Initializable {
                 break;
             }
 
+            // Format empty cells to avoid errors
+            Cell cell;
             for (int j = 0; j < row.getLastCellNum(); j++) {
-                if (row.getCell(j) == null) {
+
+                // Get the current cell
+                cell = row.getCell(j);
+
+                // If the cell doesn't exist, create a blank cell
+                if (cell == null) {
                     row.createCell(j);
+
+                // If the cell is an empty string, make it blank instead
+                } else if (cell.getCellType().equals(CellType.STRING) && cell.getStringCellValue().equals("")) {
+                    cell.setBlank();
                 }
             }
 
@@ -258,9 +266,7 @@ public class TransferController implements Initializable {
             termDate2  = ((td2 == null) ? null : td2.toInstant()
                 .atZone(ZoneId.systemDefault()).toLocalDate());
 
-            //
-            // To DO: find out how to split entrance fee for 1st and 2nd person
-            //            
+            // Get fees for person 1 (person 2 always set to 0.0)
             entryFee1 = row.getCell(20).getNumericCellValue();
             nonrefFee1 = row.getCell(21).getNumericCellValue();
             refundFee1 = row.getCell(22).getNumericCellValue();
@@ -270,6 +276,7 @@ public class TransferController implements Initializable {
             contract = (int) row.getCell(5).getNumericCellValue();
             decline = declineList.get(contract);
             
+            // Create a new Resident entry and add it to the ResidentList
             residentList.add(new Resident(
                 /* refNo */ i-9,
                 /* last */ row.getCell(1).getStringCellValue(),
