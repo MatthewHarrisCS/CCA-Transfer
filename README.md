@@ -1,0 +1,3 @@
+LifeCalc Transfer Table Generator
+
+COPYRIGHT © 2023 CONTINUING CARE ACTUARIES

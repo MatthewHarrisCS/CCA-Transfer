@@ -4,11 +4,8 @@ import java.time.LocalDate;
 
 public class TransferResident {
 
-    int refNo;
-    String last;
-    String first;
-    int res;
-    int into;
+    int refNo, res, into;
+    String last, first;
     LocalDate date;
 
     public TransferResident(int refNo, String last, String first, int res, int into, LocalDate date) {
@@ -52,29 +49,4 @@ public class TransferResident {
     public LocalDate getDate() {
         return date;
     }
-
-    public void setRefNo(int refNo) {
-        this.refNo = refNo;
-    }
-
-    public void setLast(String last) {
-        this.last = last;
-    }
-
-    public void setFirst(String first) {
-        this.first = first;
-    }
-
-    public void setRes(int res) {
-        this.res = res;
-    }
-
-    public void setInto(int into) {
-        this.into = into;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
-    
 }

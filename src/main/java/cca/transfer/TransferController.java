@@ -46,45 +46,27 @@ import javafx.stage.FileChooser.ExtensionFilter;
 public class TransferController implements Initializable {
     
     @FXML private TableView<Resident> residentTable;
-    @FXML private TableColumn<Resident, Integer> refNo;
-    @FXML private TableColumn<Resident, String> last;
-    @FXML private TableColumn<Resident, String> first;
-    @FXML private TableColumn<Resident, String> unitNo;
-    @FXML private TableColumn<Resident, Integer> unitType;
-    @FXML private TableColumn<Resident, Integer> sex1;
-    @FXML private TableColumn<Resident, Integer> sex2;
-    @FXML private TableColumn<Resident, LocalDate> birthDate1;
-    @FXML private TableColumn<Resident, LocalDate> birthDate2;
-    @FXML private TableColumn<Resident, LocalDate> entryDate1;
-    @FXML private TableColumn<Resident, LocalDate> entryDate2;
-    @FXML private TableColumn<Resident, Double> entryFee1;
-    @FXML private TableColumn<Resident, Double> entryFee2;
-    @FXML private TableColumn<Resident, LocalDate> deathDate1;
-    @FXML private TableColumn<Resident, LocalDate> deathDate2;
-    @FXML private TableColumn<Resident, LocalDate> termDate1;
-    @FXML private TableColumn<Resident, LocalDate> termDate2;
-    @FXML private TableColumn<Resident, Double> nonrefFee1;
-    @FXML private TableColumn<Resident, Double> nonrefFee2;
-    @FXML private TableColumn<Resident, Double> refundFee1;
-    @FXML private TableColumn<Resident, Double> refundFee2;
-    @FXML private TableColumn<Resident, Double> comFee1;
-    @FXML private TableColumn<Resident, Double> comFee2;
-    @FXML private TableColumn<Resident, Integer> decline;
-    @FXML private TableColumn<Resident, Integer> fso;
-    @FXML private TableColumn<Resident, Integer> contract;
+    @FXML private TableColumn<Resident, Integer> 
+        refNo, unitType, sex1, sex2, decline, fso, contract;
+    @FXML private TableColumn<Resident, String> 
+        last, first, unitNo;
+    @FXML private TableColumn<Resident, LocalDate> 
+        birthDate1, birthDate2, entryDate1, entryDate2, 
+        deathDate1, deathDate2,  termDate1, termDate2;
+    @FXML private TableColumn<Resident, Double> 
+        entryFee1, entryFee2, nonrefFee1, nonrefFee2, 
+        refundFee1, refundFee2, comFee1, comFee2;
 
     @FXML private TableView<TransferResident> transferTable;
-    @FXML private TableColumn<TransferResident, Integer> transferRefNo;
-    @FXML private TableColumn<TransferResident, String> transferLast;
-    @FXML private TableColumn<TransferResident, String> transferFirst;
-    @FXML private TableColumn<TransferResident, Integer> res;
-    @FXML private TableColumn<TransferResident, Integer> into;
+    @FXML private TableColumn<TransferResident, Integer> 
+        transferRefNo, res, into;
+    @FXML private TableColumn<TransferResident, String> 
+        transferLast, transferFirst;
     @FXML private TableColumn<TransferResident, LocalDate> date;
 
     @FXML private Label status;
-    @FXML private Button copyTransfersButton;
-    @FXML private Button copyResidentsButton;
-    @FXML private Button exportButton;
+    @FXML private Button 
+        copyTransfersButton, copyResidentsButton, exportButton;
 
     ObservableList<Resident> residentList = FXCollections.observableArrayList();
     ObservableList<TransferResident> transferList = FXCollections.observableArrayList();
@@ -92,6 +74,7 @@ public class TransferController implements Initializable {
      * TO DO
      * 4 and 5 Level radio buttons
      * Decline steps in the info tab
+     * Graceful cancel
      */
 
     @Override
@@ -151,8 +134,8 @@ public class TransferController implements Initializable {
         fc.getExtensionFilters().add(new ExtensionFilter("Excel Files", "*.xlsx"));
         File home = new File(System.getProperty("user.dir"));
         fc.setInitialDirectory(home);
+        
         try {
-
             // Get the spreadsheet from the user and open the INPUT sheet
             FileInputStream excel = new FileInputStream(fc.showOpenDialog(transferTable.getScene().getWindow()));
             XSSFWorkbook workbook = new XSSFWorkbook(excel);
@@ -171,9 +154,12 @@ public class TransferController implements Initializable {
             copyResidentsButton.setDisable(false);
             exportButton.setDisable(false);
 
-        } catch (IOException|NullPointerException|IllegalStateException e) {
+        } catch (IOException|IllegalStateException e) {
             // If exception, print message to status
             status.setText("" + e);
+        } catch (NullPointerException e) {
+            // If canceled, don't display error message
+            status.setText("");
         }
     }
 
@@ -184,32 +170,16 @@ public class TransferController implements Initializable {
         residentList.clear();
         Row row;
         String unitNo;
-        int sex1;
-        int sex2;
-        LocalDate birthDate1;
-        LocalDate birthDate2;
-        LocalDate entryDate1;
-        LocalDate entryDate2;
-        double entryFee1;
-        LocalDate deathDate1;
-        LocalDate deathDate2;
-        LocalDate termDate1;
-        LocalDate termDate2;
-        double nonrefFee1;
-        double refundFee1;
-        double comFee1;
-        int decline;
-        int contract;
-        LocalDate transfer1to2;
-        LocalDate transfer1to3;
-        LocalDate transfer2to2;
-        LocalDate transfer2to3;
+        int sex1, sex2, decline, contract;
+        LocalDate birthDate1, birthDate2, entryDate1, entryDate2, 
+            deathDate1, deathDate2, termDate1, termDate2, 
+            transfer1to2, transfer1to3, transfer2to2, transfer2to3;
+        double entryFee1, nonrefFee1, refundFee1, comFee1;
         Date bd1, bd2, ed1, ed2, dd1, dd2, td1, td2, t12, t13, t22, t23;
 
         List<Integer> declineList = getDecline(sheet.getWorkbook());
 
         for (int i = 9; i <= sheet.getLastRowNum(); i++) {
-            
             // Get the current row: if Last Name is null, end the loop
             row = sheet.getRow(i);
 
@@ -331,7 +301,6 @@ public class TransferController implements Initializable {
 
         // Go through the entire residentList
         for (int i = 0; i < residentList.size(); i++) {
-            
             // Get the resident at the current index
             resident = residentList.get(i);
 
@@ -475,9 +444,12 @@ public class TransferController implements Initializable {
             excelOut.close();
             status.setText("Table exported successfully");
 
-        } catch (IOException|NullPointerException e) {
+        } catch (IOException e) {
             // If exception, print message to status
             status.setText("" + e);
+        } catch (NullPointerException e) {
+            // If canceled, don't display error message
+            status.setText("");
         }
     }
 

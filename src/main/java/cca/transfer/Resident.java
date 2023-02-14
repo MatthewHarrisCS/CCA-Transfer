@@ -4,36 +4,13 @@ import java.time.LocalDate;
 
 public class Resident {
 
-    int refNo;
-    String last;
-    String first;
-    String unitNo;
-    int unitType;
-    int sex1;
-    int sex2;
-    LocalDate birthDate1;
-    LocalDate birthDate2;
-    LocalDate entryDate1;
-    LocalDate entryDate2;
-    double entryFee1;
-    double entryFee2;
-    LocalDate deathDate1;
-    LocalDate deathDate2;
-    LocalDate termDate1;
-    LocalDate termDate2;
-    double nonrefFee1;
-    double nonrefFee2;
-    double refundFee1;
-    double refundFee2;
-    double comFee1;
-    double comFee2;
-    int decline;
-    int fso;
-    int contract;
-    LocalDate transfer1to2;
-    LocalDate transfer1to3;
-    LocalDate transfer2to2;
-    LocalDate transfer2to3;
+    int refNo, unitType, sex1, sex2, decline, fso, contract;
+    String last, first, unitNo;
+    LocalDate birthDate1, birthDate2, entryDate1, entryDate2,
+        deathDate1, deathDate2, termDate1,  termDate2,
+        transfer1to2, transfer1to3, transfer2to2, transfer2to3;
+    double entryFee1, entryFee2, nonrefFee1, nonrefFee2, 
+        refundFee1, refundFee2, comFee1, comFee2;
 
     public Resident(int refNo, String last, String first, String unitNo, int unitType, int sex1, int sex2,
                     LocalDate birthDate1, LocalDate birthDate2, LocalDate entryDate1, LocalDate entryDate2,
