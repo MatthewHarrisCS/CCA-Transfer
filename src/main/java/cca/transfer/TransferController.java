@@ -45,6 +45,7 @@ import javafx.stage.FileChooser.ExtensionFilter;
 
 public class TransferController implements Initializable {
     
+    // residentTable and its columns
     @FXML private TableView<Resident> residentTable;
     @FXML private TableColumn<Resident, Integer> 
         refNo, unitType, sex1, sex2, decline, fso, contract;
@@ -57,12 +58,22 @@ public class TransferController implements Initializable {
         entryFee1, entryFee2, nonrefFee1, nonrefFee2, 
         refundFee1, refundFee2, comFee1, comFee2;
 
+    // transferTable and its columns
     @FXML private TableView<TransferResident> transferTable;
     @FXML private TableColumn<TransferResident, Integer> 
         transferRefNo, res, into;
     @FXML private TableColumn<TransferResident, String> 
         transferLast, transferFirst;
     @FXML private TableColumn<TransferResident, LocalDate> date;
+
+    // amortTable and its columns
+    @FXML private TableView<Amort> amortTable;
+    @FXML private TableColumn<Amort, Integer> amortRef;
+    @FXML private TableColumn<Amort, Double> 
+        lifeX1, lifeX2, rNewFees, rActRef, nrActRef, rFeeBal, 
+        cActRef, nrNewSl, nrAmorSl, nrTermSl, nrUnamSl, cNewSl, 
+        cAmorSl, cTermSl, cUnamSl, nrNewCC, nrAmorCC, nrTermCC, 
+        nrUnamCC, cNewCC, cAmorCC, cTermCC, cUnamCC;
 
     @FXML private Label status;
     @FXML private Button 
@@ -115,6 +126,32 @@ public class TransferController implements Initializable {
         res.setCellValueFactory(new PropertyValueFactory<TransferResident, Integer>("res"));
         into.setCellValueFactory(new PropertyValueFactory<TransferResident, Integer>("into"));
         date.setCellValueFactory(new PropertyValueFactory<TransferResident, LocalDate>("date"));
+
+        // Set columns for amortization table
+        amortRef.setCellValueFactory(new PropertyValueFactory<Amort, Integer>("ref"));
+        lifeX1.setCellValueFactory(new PropertyValueFactory<Amort, Double>("lifeX1"));
+        lifeX2.setCellValueFactory(new PropertyValueFactory<Amort, Double>("lifeX2"));
+        rNewFees.setCellValueFactory(new PropertyValueFactory<Amort, Double>("rNewFees"));
+        rActRef.setCellValueFactory(new PropertyValueFactory<Amort, Double>("rActRef"));
+        rFeeBal.setCellValueFactory(new PropertyValueFactory<Amort, Double>("rFeeBal"));
+        nrActRef.setCellValueFactory(new PropertyValueFactory<Amort, Double>("nrActRef"));
+        cActRef.setCellValueFactory(new PropertyValueFactory<Amort, Double>("cActRef"));
+        nrNewSl.setCellValueFactory(new PropertyValueFactory<Amort, Double>("nrNewSl"));
+        nrAmorSl.setCellValueFactory(new PropertyValueFactory<Amort, Double>("nrAmorSl"));
+        nrTermSl.setCellValueFactory(new PropertyValueFactory<Amort, Double>("nrTermSl"));
+        nrUnamSl.setCellValueFactory(new PropertyValueFactory<Amort, Double>("nrUnamSl"));
+        cNewSl.setCellValueFactory(new PropertyValueFactory<Amort, Double>("cNewSl"));
+        cAmorSl.setCellValueFactory(new PropertyValueFactory<Amort, Double>("cAmorSl"));
+        cTermSl.setCellValueFactory(new PropertyValueFactory<Amort, Double>("cTermSl"));
+        cUnamSl.setCellValueFactory(new PropertyValueFactory<Amort, Double>("cUnamSl"));
+        nrNewCC.setCellValueFactory(new PropertyValueFactory<Amort, Double>("nrNewCC"));
+        nrAmorCC.setCellValueFactory(new PropertyValueFactory<Amort, Double>("nrAmorCC"));
+        nrTermCC.setCellValueFactory(new PropertyValueFactory<Amort, Double>("nrTermCC"));
+        nrUnamCC.setCellValueFactory(new PropertyValueFactory<Amort, Double>("nrUnamCC"));
+        cNewCC.setCellValueFactory(new PropertyValueFactory<Amort, Double>("cNewCC"));
+        cAmorCC.setCellValueFactory(new PropertyValueFactory<Amort, Double>("cAmorCC"));
+        cTermCC.setCellValueFactory(new PropertyValueFactory<Amort, Double>("cTermCC"));
+        cUnamCC.setCellValueFactory(new PropertyValueFactory<Amort, Double>("cUnamCC"));
 
         // Attach the lists to their respective table
         residentTable.setItems(residentList);
@@ -814,7 +851,15 @@ public class TransferController implements Initializable {
 
             // Access the .fxml file for the dialog box
             FXMLLoader fxmlLoader = new FXMLLoader();
-            fxmlLoader.setLocation((App.class.getResource("info.fxml")));
+
+            if (level3) {
+                fxmlLoader.setLocation((App.class.getResource("info3.fxml")));
+            } else if (level4) {
+                fxmlLoader.setLocation((App.class.getResource("info4.fxml")));
+            } else {
+                fxmlLoader.setLocation((App.class.getResource("info5.fxml")));
+            }
+
             DialogPane errDialog = fxmlLoader.load();
 
             // Initialize the dialog box

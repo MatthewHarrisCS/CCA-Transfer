@@ -90,6 +90,38 @@
                   </TableView>
                </content>
             </Tab>
+            <Tab text="AmortTBD">
+               <content>
+                  <TableView prefHeight="2000.0">
+                    <columns>
+                        <TableColumn prefWidth="75.0" fx:id="amortRef" text="REF" />
+                        <TableColumn prefWidth="75.0" fx:id="lifeX1" text="LIFEX1" />
+                        <TableColumn prefWidth="75.0" fx:id="lifeX2" text="LIFEX2" />
+                        <TableColumn prefWidth="75.0" fx:id="rNewFees" text="R_NEWFEES" />
+                        <TableColumn prefWidth="75.0" fx:id="rActRef" text="R_ACTREF" />
+                        <TableColumn prefWidth="75.0" fx:id="rFeeBal" text="R_FEEBAL" />
+                        <TableColumn prefWidth="75.0" fx:id="nrActRef" text="NR_ACTREF" />
+                        <TableColumn prefWidth="75.0" fx:id="cActRef" text="C_ACTREF" />
+                        <TableColumn prefWidth="75.0" fx:id="nrNewSl" text="NR_NEWSL" />
+                        <TableColumn prefWidth="75.0" fx:id="nrAmorSl" text="NR_AMORSL" />
+                        <TableColumn prefWidth="75.0" fx:id="nrTermSl" text="NR_TERMSL" />
+                        <TableColumn prefWidth="75.0" fx:id="nrUnamSl" text="NR_UNAMSL" />
+                        <TableColumn prefWidth="75.0" fx:id="cNewSl" text="C_NEWSL" />
+                        <TableColumn prefWidth="75.0" fx:id="cAmorSl" text="C_AMORSL" />
+                        <TableColumn prefWidth="75.0" fx:id="cTermSl" text="C_TERMSL" />
+                        <TableColumn prefWidth="75.0" fx:id="cUnamSl" text="C_UNAMSL" />
+                        <TableColumn prefWidth="75.0" fx:id="nrNewCC" text="NR_NEWCC" />
+                        <TableColumn prefWidth="75.0" fx:id="nrAmorCC" text="NR_AMORCC" />
+                        <TableColumn prefWidth="75.0" fx:id="nrTermCC" text="NR_TERMCC" />
+                        <TableColumn prefWidth="75.0" fx:id="nrUnamCC" text="NR_UNAMCC" />
+                        <TableColumn prefWidth="75.0" fx:id="cNewCC" text="C_NEWCC" />
+                        <TableColumn prefWidth="75.0" fx:id="cAmorCC" text="C_AMORCC" />
+                        <TableColumn prefWidth="75.0" fx:id="cTermCC" text="C_TERMCC" />
+                        <TableColumn prefWidth="75.0" fx:id="cUnamCC" text="C_UNAMCC" />
+                    </columns>
+                  </TableView>
+               </content>
+            </Tab>
          </tabs>
       </TabPane>
       <HBox alignment="CENTER">
@@ -122,17 +154,17 @@
       </HBox>
       <HBox alignment="CENTER">
          <children>
-            <Button fx:id="level3Button" onAction="#switchTo3" disable="true" mnemonicParsing="false" text="3-Level">
+            <Button fx:id="level3Button" disable="true" mnemonicParsing="false" onAction="#switchTo3" text="3-Level">
                <HBox.margin>
                   <Insets right="10.0" />
                </HBox.margin>
             </Button>
-            <Button fx:id="level4Button" onAction="#switchTo4" mnemonicParsing="false" text="4-Level">
+            <Button fx:id="level4Button" mnemonicParsing="false" onAction="#switchTo4" text="4-Level">
                <HBox.margin>
                   <Insets right="10.0" />
                </HBox.margin>
             </Button>
-            <Button fx:id="level5Button" onAction="#switchTo5" mnemonicParsing="false" text="5-Level" />
+            <Button fx:id="level5Button" mnemonicParsing="false" onAction="#switchTo5" text="5-Level" />
          </children>
       </HBox>
       <FlowPane alignment="CENTER" columnHalignment="CENTER">
