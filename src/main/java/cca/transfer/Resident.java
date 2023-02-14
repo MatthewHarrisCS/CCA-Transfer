@@ -8,7 +8,8 @@ public class Resident {
     String last, first, unitNo;
     LocalDate birthDate1, birthDate2, entryDate1, entryDate2,
         deathDate1, deathDate2, termDate1,  termDate2,
-        transfer1to2, transfer1to3, transfer2to2, transfer2to3;
+        transfer1to2, transfer1to3, transfer1to4, transfer1to5, 
+        transfer2to2, transfer2to3, transfer2to4, transfer2to5;
     double entryFee1, entryFee2, nonrefFee1, nonrefFee2, 
         refundFee1, refundFee2, comFee1, comFee2;
 
@@ -16,9 +17,9 @@ public class Resident {
                     LocalDate birthDate1, LocalDate birthDate2, LocalDate entryDate1, LocalDate entryDate2,
                     double entryFee1, double entryFee2, LocalDate deathDate1, LocalDate deathDate2,
                     LocalDate termDate1, LocalDate termDate2, double nonrefFee1, double nonrefFee2,
-                    double refundFee1, double refundFee2, double comFee1, double comFee2, 
-                    int decline, int fso, int contract, LocalDate transfer1to2, LocalDate transfer1to3, 
-                    LocalDate transfer2to2, LocalDate transfer2to3) {
+                    double refundFee1, double refundFee2, double comFee1, double comFee2, int decline, int fso, int contract, 
+                    LocalDate transfer1to2, LocalDate transfer1to3, LocalDate transfer1to4, LocalDate transfer1to5, 
+                    LocalDate transfer2to2, LocalDate transfer2to3, LocalDate transfer2to4, LocalDate transfer2to5) {
         this.refNo        = refNo;
         this.last         = last;
         this.first        = first;
@@ -47,8 +48,12 @@ public class Resident {
         this.contract     = contract;
         this.transfer1to2 = transfer1to2;
         this.transfer1to3 = transfer1to3;
+        this.transfer1to4 = transfer1to4;
+        this.transfer1to5 = transfer1to5;
         this.transfer2to2 = transfer2to2;
         this.transfer2to3 = transfer2to3;
+        this.transfer2to4 = transfer2to4;
+        this.transfer2to5 = transfer2to5;
     }
 
     public Resident() {
@@ -80,8 +85,12 @@ public class Resident {
         this.contract     = -1;
         this.transfer1to2 = null;
         this.transfer1to3 = null;
+        this.transfer1to4 = null;
+        this.transfer1to5 = null;
         this.transfer2to2 = null;
         this.transfer2to3 = null;
+        this.transfer2to4 = null;
+        this.transfer2to5 = null;
     }
 
     public int getRefNo() {

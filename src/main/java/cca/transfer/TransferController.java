@@ -66,19 +66,19 @@ public class TransferController implements Initializable {
 
     @FXML private Label status;
     @FXML private Button 
-        copyTransfersButton, copyResidentsButton, exportButton;
+        copyTransfersButton, copyResidentsButton, 
+        exportButton, level3Button, level4Button, level5Button;
 
-    ObservableList<Resident> residentList = FXCollections.observableArrayList();
-    ObservableList<TransferResident> transferList = FXCollections.observableArrayList();
-    /*
-     * TO DO
-     * 4 and 5 Level radio buttons
-     * Decline steps in the info tab
-     * Graceful cancel
-     */
+    private ObservableList<Resident> residentList = FXCollections.observableArrayList();
+    private ObservableList<TransferResident> transferList = FXCollections.observableArrayList();
+
+    private boolean level3, level4;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+
+        // Set the initial care level (default is 3)
+        setLevel();
 
         // Set columns for resident table
         refNo.setCellValueFactory(new PropertyValueFactory<Resident, Integer>("refNo"));
@@ -119,9 +119,47 @@ public class TransferController implements Initializable {
         // Attach the lists to their respective table
         residentTable.setItems(residentList);
         transferTable.setItems(transferList);
+    }
 
+    // setLevel(): set the level markers for 3 or 4 if either
+    //             of their buttons is disabled (5 not needed)
+    private void setLevel() {
+        level3 = level3Button.isDisabled();
+        level4 = level4Button.isDisabled();
+    }
+
+    // switchTo3(): disable the 3-Level button, enable the others,
+    //              and set the level marker for 3 to true
+    @FXML
+    private void switchTo3() {
+        level3Button.setDisable(true);
+        level4Button.setDisable(false);
+        level5Button.setDisable(false);
+
+        setLevel();
+    }
+    // switchTo4(): disable the 4-Level button, enable the others,
+    //              and set the level marker for 4 to true
+    @FXML
+    private void switchTo4() {
+        level3Button.setDisable(false);
+        level4Button.setDisable(true);
+        level5Button.setDisable(false);
+
+        setLevel();
     }
     
+    // switchTo5(): disable the 5-Level button, enable the others,
+    //              and set both 3 and 4 level markers to false
+    @FXML
+    private void switchTo5() {
+        level3Button.setDisable(false);
+        level4Button.setDisable(false);
+        level5Button.setDisable(true);
+
+        setLevel();
+    }
+
     // importSpreadsheet(): open the spreadsheet containing the resident data
     //                      and convert it into the table format
     @FXML
@@ -172,12 +210,78 @@ public class TransferController implements Initializable {
         String unitNo;
         int sex1, sex2, decline, contract;
         LocalDate birthDate1, birthDate2, entryDate1, entryDate2, 
-            deathDate1, deathDate2, termDate1, termDate2, 
-            transfer1to2, transfer1to3, transfer2to2, transfer2to3;
+            deathDate1, deathDate2, termDate1, termDate2,
+            transfer1to2, transfer1to3, transfer1to4, transfer1to5,
+            transfer2to2, transfer2to3, transfer2to4, transfer2to5;
         double entryFee1, nonrefFee1, refundFee1, comFee1;
-        Date bd1, bd2, ed1, ed2, dd1, dd2, td1, td2, t12, t13, t22, t23;
+        Date bd1, bd2, ed1, ed2, dd1, dd2, td1, td2, 
+            t12, t13, t14, t15, t22, t23, t24, t25;
 
         List<Integer> declineList = getDecline(sheet.getWorkbook());
+
+        // Column numbers for everything than can shift due to extra levels of care
+        int t14Col, t15Col, dd1Col, td1Col, sex2Col, bd2Col, ed2Col, 
+            t22Col, t23Col, t24Col, t25Col, dd2Col, td2Col, 
+            entryFee1Col, nonrefFee1Col, refundFee1Col, comFee1Col;
+
+        if (level3) {
+            // If 3 marker set, use the column values for 3-Level sheets
+            t14Col = 0;
+            t15Col = 0;
+            dd1Col = 11;
+            td1Col = 12;
+            sex2Col = 13;
+            bd2Col = 14;
+            ed2Col = 15;
+            t22Col = 16;
+            t23Col = 17;
+            t24Col = 0;
+            t25Col = 0;
+            dd2Col = 18;
+            td2Col = 19;
+            entryFee1Col = 20;
+            nonrefFee1Col = 21;
+            refundFee1Col = 22;
+            comFee1Col = 23;
+        } else if (level4) {
+            // If 4 marker set, use the column values for 4-Level sheets
+            t14Col = 11;
+            t15Col = 0;
+            dd1Col = 12;
+            td1Col = 13;
+            sex2Col = 14;
+            bd2Col = 15;
+            ed2Col = 16;
+            t22Col = 17;
+            t23Col = 18;
+            t24Col = 19;
+            t25Col = 0;
+            dd2Col = 20;
+            td2Col = 21;
+            entryFee1Col = 22;
+            nonrefFee1Col = 23;
+            refundFee1Col = 24;
+            comFee1Col = 25;
+        } else {
+            // If neither marker set, use the column values for 5-Level sheets
+            t14Col = 11;
+            t15Col = 12;
+            dd1Col = 13;
+            td1Col = 14;
+            sex2Col = 15;
+            bd2Col = 16;
+            ed2Col = 17;
+            t22Col = 18;
+            t23Col = 19;
+            t24Col = 20;
+            t25Col = 21;
+            dd2Col = 22;
+            td2Col = 23;
+            entryFee1Col = 24;
+            nonrefFee1Col = 25;
+            refundFee1Col = 26;
+            comFee1Col = 27;
+        }
 
         for (int i = 9; i <= sheet.getLastRowNum(); i++) {
             // Get the current row: if Last Name is null, end the loop
@@ -213,23 +317,31 @@ public class TransferController implements Initializable {
                 unitNo = row.getCell(3).getStringCellValue();
             }
 
+            // Get the unit type, and use the index to find the decline result
+            contract = (int) row.getCell(5).getNumericCellValue();
+            decline = declineList.get(contract);
+
             // Check if the sex of 1st and 2nd is male, female, or null
             sex1 = gender(row.getCell(6).getStringCellValue());
-            sex2 = gender(row.getCell(13).getStringCellValue());
+            sex2 = gender(row.getCell(sex2Col).getStringCellValue());
 
             // Get date values from the Birth, Entry, Death, and Termin cells
             bd1 = row.getCell(7).getDateCellValue();
-            bd2 = row.getCell(14).getDateCellValue();
+            bd2 = row.getCell(bd2Col).getDateCellValue();
             ed1 = row.getCell(8).getDateCellValue();
-            ed2 = row.getCell(15).getDateCellValue();
-            dd1 = row.getCell(11).getDateCellValue();
-            dd2 = row.getCell(18).getDateCellValue();
-            td1 = row.getCell(12).getDateCellValue();
-            td2 = row.getCell(19).getDateCellValue();
+            ed2 = row.getCell(ed2Col).getDateCellValue();
+            dd1 = row.getCell(dd1Col).getDateCellValue();
+            dd2 = row.getCell(dd2Col).getDateCellValue();
+            td1 = row.getCell(td1Col).getDateCellValue();
+            td2 = row.getCell(td2Col).getDateCellValue();
             t12 = row.getCell(9).getDateCellValue();
             t13 = row.getCell(10).getDateCellValue();
-            t22 = row.getCell(16).getDateCellValue();
-            t23 = row.getCell(17).getDateCellValue();
+            t14 = row.getCell(t14Col).getDateCellValue();
+            t15 = row.getCell(t15Col).getDateCellValue();
+            t22 = row.getCell(t22Col).getDateCellValue();
+            t23 = row.getCell(t23Col).getDateCellValue();
+            t24 = row.getCell(t24Col).getDateCellValue();
+            t25 = row.getCell(t25Col).getDateCellValue();
             
             // If the date value is not null, convert to LocalDate
             // otherwise leave null
@@ -253,20 +365,24 @@ public class TransferController implements Initializable {
                 .atZone(ZoneId.systemDefault()).toLocalDate());
             transfer1to3  = ((t13 == null) ? null : t13.toInstant()
                 .atZone(ZoneId.systemDefault()).toLocalDate());
+            transfer1to4  = ((t14 == null) ? null : t14.toInstant()
+                .atZone(ZoneId.systemDefault()).toLocalDate());
+            transfer1to5  = ((t15 == null) ? null : t15.toInstant()
+                .atZone(ZoneId.systemDefault()).toLocalDate());
             transfer2to2  = ((t22 == null) ? null : t22.toInstant()
                 .atZone(ZoneId.systemDefault()).toLocalDate());
             transfer2to3  = ((t23 == null) ? null : t23.toInstant()
                 .atZone(ZoneId.systemDefault()).toLocalDate());
-
+            transfer2to4  = ((t24 == null) ? null : t24.toInstant()
+                .atZone(ZoneId.systemDefault()).toLocalDate());
+            transfer2to5  = ((t25 == null) ? null : t25.toInstant()
+                .atZone(ZoneId.systemDefault()).toLocalDate());
+            
             // Get fees for person 1 (person 2 always set to 0.0)
-            entryFee1 = row.getCell(20).getNumericCellValue();
-            nonrefFee1 = row.getCell(21).getNumericCellValue();
-            refundFee1 = row.getCell(22).getNumericCellValue();
-            comFee1 = row.getCell(23).getNumericCellValue();
-
-            // Get the unit type, and use the index to find the decline result
-            contract = (int) row.getCell(5).getNumericCellValue();
-            decline = declineList.get(contract);
+            entryFee1 = row.getCell(entryFee1Col).getNumericCellValue();
+            nonrefFee1 = row.getCell(nonrefFee1Col).getNumericCellValue();
+            refundFee1 = row.getCell(refundFee1Col).getNumericCellValue();
+            comFee1 = row.getCell(comFee1Col).getNumericCellValue();
             
             // Create a new Resident entry and add it to the ResidentList
             residentList.add(new Resident(
@@ -282,8 +398,8 @@ public class TransferController implements Initializable {
                 refundFee1, /*refundFee2*/ 0.0, 
                 comFee1, /* comFee2 */ 0.0, 
                 decline, /* fso */ 0, contract,
-                transfer1to2, transfer1to3, transfer2to2, transfer2to3));
-
+                transfer1to2, transfer1to3, transfer1to4, transfer1to5,
+                transfer2to2, transfer2to3, transfer2to4, transfer2to5));
         }
 
         // Import the transfers using the newly created residentList
@@ -307,11 +423,13 @@ public class TransferController implements Initializable {
             // Call addTransfer for each of the potential transfers
             addTransfer(resident, 1, 2, resident.transfer1to2);
             addTransfer(resident, 1, 3, resident.transfer1to3);
+            addTransfer(resident, 1, 4, resident.transfer1to4);
+            addTransfer(resident, 1, 5, resident.transfer1to5);
             addTransfer(resident, 2, 2, resident.transfer2to2);
             addTransfer(resident, 2, 3, resident.transfer2to3);
-
+            addTransfer(resident, 2, 4, resident.transfer2to4);
+            addTransfer(resident, 2, 5, resident.transfer2to5);
         }
-        
     }
 
     // addTransfer(): add an entry to transferList if the 
@@ -323,7 +441,6 @@ public class TransferController implements Initializable {
         if (transfer != null) {
             transferList.add(new TransferResident(resident.refNo, resident.last, resident.first, res, into, transfer));
         }
-        
     }
 
     // copyResidents(): copy the residentList to the clipboard
@@ -578,7 +695,6 @@ public class TransferController implements Initializable {
         for (int i = 0; i <= 26; i++) {
             sheet.autoSizeColumn(i);
         }
-
     }
 
     // exportTransfers(): create a new Excel sheet and copy 
@@ -651,7 +767,6 @@ public class TransferController implements Initializable {
         for (int i = 0; i <= 26; i++) {
             sheet.autoSizeColumn(i);
         }
-
     }
 
     // gender(): get the correct gender index for the given character

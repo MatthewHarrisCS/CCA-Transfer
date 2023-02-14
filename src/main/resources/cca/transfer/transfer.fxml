@@ -113,11 +113,26 @@
                   <Insets right="10.0" />
                </HBox.margin>
             </Button>
-            <Button onAction="#info" mnemonicParsing="false" text="Info">
+            <Button mnemonicParsing="false" onAction="#info" text="Info">
                <HBox.margin>
                   <Insets />
                </HBox.margin>
             </Button>
+         </children>
+      </HBox>
+      <HBox alignment="CENTER">
+         <children>
+            <Button fx:id="level3Button" onAction="#switchTo3" disable="true" mnemonicParsing="false" text="3-Level">
+               <HBox.margin>
+                  <Insets right="10.0" />
+               </HBox.margin>
+            </Button>
+            <Button fx:id="level4Button" onAction="#switchTo4" mnemonicParsing="false" text="4-Level">
+               <HBox.margin>
+                  <Insets right="10.0" />
+               </HBox.margin>
+            </Button>
+            <Button fx:id="level5Button" onAction="#switchTo5" mnemonicParsing="false" text="5-Level" />
          </children>
       </HBox>
       <FlowPane alignment="CENTER" columnHalignment="CENTER">
