@@ -90,13 +90,13 @@
                   </TableView>
                </content>
             </Tab>
-            <Tab fx:id="amortTab" text="AmortTBD">
+            <Tab fx:id="amortTab" text="Amort">
                <content>
                   <TableView fx:id="amortTable" prefHeight="2000.0">
                     <columns>
                         <TableColumn fx:id="amortRef" prefWidth="75.0" text="REF" />
-                        <TableColumn fx:id="lifeX1" prefWidth="75.0" text="LIFEX1" />
-                        <TableColumn fx:id="lifeX2" prefWidth="75.0" text="LIFEX2" />
+                        <TableColumn fx:id="lifeEx1" prefWidth="75.0" text="LIFEEX1" />
+                        <TableColumn fx:id="lifeEx2" prefWidth="75.0" text="LIFEEX2" />
                         <TableColumn fx:id="rNewFees" prefWidth="75.0" text="R_NEWFEES" />
                         <TableColumn fx:id="rActRef" prefWidth="75.0" text="R_ACTREF" />
                         <TableColumn fx:id="rFeeBal" prefWidth="75.0" text="R_FEEBAL" />

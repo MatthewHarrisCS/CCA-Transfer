@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -72,7 +71,7 @@ public class TransferController implements Initializable {
     @FXML private TableView<Amort> amortTable;
     @FXML private TableColumn<Amort, Integer> amortRef;
     @FXML private TableColumn<Amort, Double> 
-        lifeX1, lifeX2, rNewFees, rActRef, nrActRef, rFeeBal, 
+        lifeEx1, lifeEx2, rNewFees, rActRef, nrActRef, rFeeBal, 
         cActRef, nrNewSl, nrAmorSl, nrTermSl, nrUnamSl, cNewSl, 
         cAmorSl, cTermSl, cUnamSl, nrNewCC, nrAmorCC, nrTermCC, 
         nrUnamCC, cNewCC, cAmorCC, cTermCC, cUnamCC;
@@ -133,8 +132,8 @@ public class TransferController implements Initializable {
 
         // Set columns for amortization table
         amortRef.setCellValueFactory(new PropertyValueFactory<Amort, Integer>("ref"));
-        lifeX1.setCellValueFactory(new PropertyValueFactory<Amort, Double>("lifeX1"));
-        lifeX2.setCellValueFactory(new PropertyValueFactory<Amort, Double>("lifeX2"));
+        lifeEx1.setCellValueFactory(new PropertyValueFactory<Amort, Double>("lifeEx1"));
+        lifeEx2.setCellValueFactory(new PropertyValueFactory<Amort, Double>("lifeEx2"));
         rNewFees.setCellValueFactory(new PropertyValueFactory<Amort, Double>("rNewFees"));
         rActRef.setCellValueFactory(new PropertyValueFactory<Amort, Double>("rActRef"));
         rFeeBal.setCellValueFactory(new PropertyValueFactory<Amort, Double>("rFeeBal"));
@@ -224,10 +223,6 @@ public class TransferController implements Initializable {
             // Call the function to import the Residents
             importResidents(sheet);
 
-            // Get the last fiscal date closing
-            SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd");
-            String date = df.format(sheet.getRow(1).getCell(24).getDateCellValue());
-
             // Close the stream to the spreadsheet
             workbook.close();
             excel.close();
@@ -235,7 +230,6 @@ public class TransferController implements Initializable {
             // Create the Transfers and Amort tables
             createTransfers();
             createAmort();
-            amortTab.setText("Amort" + date);
 
             // Write success message and give user access to the function buttons.
             status.setText("Database imported successfully");
@@ -438,7 +432,7 @@ public class TransferController implements Initializable {
             
             // Create a new Resident entry and add it to the ResidentList
             residentList.add(new Resident(
-                /* refNo */ i-9,
+                /* refNo */ i-8,
                 /* last */ row.getCell(1).getStringCellValue(),
                 /* first */ row.getCell(2).getStringCellValue(),
                 unitNo, 
@@ -567,7 +561,7 @@ public class TransferController implements Initializable {
         status.setText("Copied to clipboard");
     }
 
-    // copyTransfers(): Copy the transferList to the clipboard
+    // copyTransfers(): copy the transferList to the clipboard
     @FXML
     private void copyTransfers() throws IOException {        
         
@@ -595,6 +589,7 @@ public class TransferController implements Initializable {
         status.setText("Copied to clipboard");
     }
 
+    // copyAmort(): copy the amortList to the clipboard
     @FXML
     private void copyAmort() {
         // Set the status message and get the clipboard
@@ -608,8 +603,8 @@ public class TransferController implements Initializable {
             Amort amort = amortList.get(i);
             db +=
                 amort.getRef() + "\t" + 
-                amort.getLifeX1() + "\t" +  
-                amort.getLifeX2() + "\t" + 
+                amort.getLifeEx1() + "\t" +  
+                amort.getLifeEx2() + "\t" + 
                 amort.getRNewFees() + "\t" + 
                 amort.getRActRef() + "\t" + 
                 amort.getRFeeBal() + "\t" + 
@@ -906,8 +901,8 @@ public class TransferController implements Initializable {
 
         // Set headers for the row
         row.createCell(0).setCellValue("REF");
-        row.createCell(1).setCellValue("LIFEX1");
-        row.createCell(2).setCellValue("LIFEX2");
+        row.createCell(1).setCellValue("LIFEEX1");
+        row.createCell(2).setCellValue("LIFEEX2");
         row.createCell(3).setCellValue("R_NEWFEES");
         row.createCell(4).setCellValue("R_ACTREF");
         row.createCell(5).setCellValue("R_FEEBAL");
@@ -955,8 +950,8 @@ public class TransferController implements Initializable {
             row = sheet.createRow(i+1);
             amort = amortList.get(i);
             row.createCell(0).setCellValue(amort.getRef());
-            row.createCell(1).setCellValue(amort.getLifeX1()); 
-            row.createCell(2).setCellValue(amort.getLifeX2());
+            row.createCell(1).setCellValue(amort.getLifeEx1()); 
+            row.createCell(2).setCellValue(amort.getLifeEx2());
             row.createCell(3).setCellValue(amort.getRNewFees());
             row.createCell(4).setCellValue(amort.getRActRef());
             row.createCell(5).setCellValue(amort.getRFeeBal());

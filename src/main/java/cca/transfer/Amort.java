@@ -3,7 +3,7 @@ package cca.transfer;
 public class Amort {
     
     // The values not filled in by the program (as of now)
-    private double lifeX1 = 0.0, lifeX2 = 0.0, rNewFees = 0.0, rActRef = 0.0, 
+    private double lifeEx1 = 0.0, lifeEx2 = 0.0, rNewFees = 0.0, rActRef = 0.0, 
     nrActRef = 0.0, cActRef = 0.0, nrNewSl = 0.0, nrAmorSl = 0.0, 
     nrTermSl = 0.0, cNewSl = 0.0, cAmorSl = 0.0, cTermSl = 0.0, 
     nrNewCC = 0.0, nrAmorCC = 0.0, nrTermCC = 0.0, nrUnamCC = 0.0, 
@@ -26,12 +26,12 @@ public class Amort {
         cUnamSl = 0.0;
     }
 
-    public double getLifeX1() {
-        return lifeX1;
+    public double getLifeEx1() {
+        return lifeEx1;
     }
     
-    public double getLifeX2() {
-        return lifeX2;
+    public double getLifeEx2() {
+        return lifeEx2;
     }
 
     public double getRActRef() {
