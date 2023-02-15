@@ -4,9 +4,9 @@ import java.time.LocalDate;
 
 public class TransferResident {
 
-    int refNo, res, into;
-    String last, first;
-    LocalDate date;
+    private int refNo, res, into;
+    private String last, first;
+    private LocalDate date;
 
     public TransferResident(int refNo, String last, String first, int res, int into, LocalDate date) {
         this.refNo = refNo;

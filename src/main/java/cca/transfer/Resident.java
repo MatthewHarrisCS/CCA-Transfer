@@ -4,13 +4,13 @@ import java.time.LocalDate;
 
 public class Resident {
 
-    int refNo, unitType, sex1, sex2, decline, fso, contract;
-    String last, first, unitNo;
-    LocalDate birthDate1, birthDate2, entryDate1, entryDate2,
+    private int refNo, unitType, sex1, sex2, decline, fso, contract;
+    private String last, first, unitNo;
+    private LocalDate birthDate1, birthDate2, entryDate1, entryDate2,
         deathDate1, deathDate2, termDate1,  termDate2,
         transfer1to2, transfer1to3, transfer1to4, transfer1to5, 
         transfer2to2, transfer2to3, transfer2to4, transfer2to5;
-    double entryFee1, entryFee2, nonrefFee1, nonrefFee2, 
+    private double entryFee1, entryFee2, nonrefFee1, nonrefFee2, 
         refundFee1, refundFee2, comFee1, comFee2;
 
     public Resident(int refNo, String last, String first, String unitNo, int unitType, int sex1, int sex2,
@@ -195,5 +195,37 @@ public class Resident {
 
     public int getContract() {
         return contract;
+    }
+
+    public LocalDate getTransfer1to2() {
+        return transfer1to2; 
+    }
+
+    public LocalDate getTransfer1to3() {
+        return transfer1to3; 
+    }
+
+    public LocalDate getTransfer1to4() {
+        return transfer1to4; 
+    }
+
+    public LocalDate getTransfer1to5() {
+        return transfer1to5; 
+    }
+
+    public LocalDate getTransfer2to2() {
+        return transfer2to2; 
+    }
+    
+    public LocalDate getTransfer2to3() {
+        return transfer2to3; 
+    }
+    
+    public LocalDate getTransfer2to4() {
+        return transfer2to4; 
+    }
+    
+    public LocalDate getTransfer2to5() {
+        return transfer2to5; 
     }
 }

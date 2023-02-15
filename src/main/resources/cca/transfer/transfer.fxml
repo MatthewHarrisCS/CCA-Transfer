@@ -90,34 +90,34 @@
                   </TableView>
                </content>
             </Tab>
-            <Tab text="AmortTBD">
+            <Tab fx:id="amortTab" text="AmortTBD">
                <content>
-                  <TableView prefHeight="2000.0">
+                  <TableView fx:id="amortTable" prefHeight="2000.0">
                     <columns>
-                        <TableColumn prefWidth="75.0" fx:id="amortRef" text="REF" />
-                        <TableColumn prefWidth="75.0" fx:id="lifeX1" text="LIFEX1" />
-                        <TableColumn prefWidth="75.0" fx:id="lifeX2" text="LIFEX2" />
-                        <TableColumn prefWidth="75.0" fx:id="rNewFees" text="R_NEWFEES" />
-                        <TableColumn prefWidth="75.0" fx:id="rActRef" text="R_ACTREF" />
-                        <TableColumn prefWidth="75.0" fx:id="rFeeBal" text="R_FEEBAL" />
-                        <TableColumn prefWidth="75.0" fx:id="nrActRef" text="NR_ACTREF" />
-                        <TableColumn prefWidth="75.0" fx:id="cActRef" text="C_ACTREF" />
-                        <TableColumn prefWidth="75.0" fx:id="nrNewSl" text="NR_NEWSL" />
-                        <TableColumn prefWidth="75.0" fx:id="nrAmorSl" text="NR_AMORSL" />
-                        <TableColumn prefWidth="75.0" fx:id="nrTermSl" text="NR_TERMSL" />
-                        <TableColumn prefWidth="75.0" fx:id="nrUnamSl" text="NR_UNAMSL" />
-                        <TableColumn prefWidth="75.0" fx:id="cNewSl" text="C_NEWSL" />
-                        <TableColumn prefWidth="75.0" fx:id="cAmorSl" text="C_AMORSL" />
-                        <TableColumn prefWidth="75.0" fx:id="cTermSl" text="C_TERMSL" />
-                        <TableColumn prefWidth="75.0" fx:id="cUnamSl" text="C_UNAMSL" />
-                        <TableColumn prefWidth="75.0" fx:id="nrNewCC" text="NR_NEWCC" />
-                        <TableColumn prefWidth="75.0" fx:id="nrAmorCC" text="NR_AMORCC" />
-                        <TableColumn prefWidth="75.0" fx:id="nrTermCC" text="NR_TERMCC" />
-                        <TableColumn prefWidth="75.0" fx:id="nrUnamCC" text="NR_UNAMCC" />
-                        <TableColumn prefWidth="75.0" fx:id="cNewCC" text="C_NEWCC" />
-                        <TableColumn prefWidth="75.0" fx:id="cAmorCC" text="C_AMORCC" />
-                        <TableColumn prefWidth="75.0" fx:id="cTermCC" text="C_TERMCC" />
-                        <TableColumn prefWidth="75.0" fx:id="cUnamCC" text="C_UNAMCC" />
+                        <TableColumn fx:id="amortRef" prefWidth="75.0" text="REF" />
+                        <TableColumn fx:id="lifeX1" prefWidth="75.0" text="LIFEX1" />
+                        <TableColumn fx:id="lifeX2" prefWidth="75.0" text="LIFEX2" />
+                        <TableColumn fx:id="rNewFees" prefWidth="75.0" text="R_NEWFEES" />
+                        <TableColumn fx:id="rActRef" prefWidth="75.0" text="R_ACTREF" />
+                        <TableColumn fx:id="rFeeBal" prefWidth="75.0" text="R_FEEBAL" />
+                        <TableColumn fx:id="nrActRef" prefWidth="75.0" text="NR_ACTREF" />
+                        <TableColumn fx:id="cActRef" prefWidth="75.0" text="C_ACTREF" />
+                        <TableColumn fx:id="nrNewSl" prefWidth="75.0" text="NR_NEWSL" />
+                        <TableColumn fx:id="nrAmorSl" prefWidth="75.0" text="NR_AMORSL" />
+                        <TableColumn fx:id="nrTermSl" prefWidth="75.0" text="NR_TERMSL" />
+                        <TableColumn fx:id="nrUnamSl" prefWidth="75.0" text="NR_UNAMSL" />
+                        <TableColumn fx:id="cNewSl" prefWidth="75.0" text="C_NEWSL" />
+                        <TableColumn fx:id="cAmorSl" prefWidth="75.0" text="C_AMORSL" />
+                        <TableColumn fx:id="cTermSl" prefWidth="75.0" text="C_TERMSL" />
+                        <TableColumn fx:id="cUnamSl" prefWidth="75.0" text="C_UNAMSL" />
+                        <TableColumn fx:id="nrNewCC" prefWidth="75.0" text="NR_NEWCC" />
+                        <TableColumn fx:id="nrAmorCC" prefWidth="75.0" text="NR_AMORCC" />
+                        <TableColumn fx:id="nrTermCC" prefWidth="75.0" text="NR_TERMCC" />
+                        <TableColumn fx:id="nrUnamCC" prefWidth="75.0" text="NR_UNAMCC" />
+                        <TableColumn fx:id="cNewCC" prefWidth="75.0" text="C_NEWCC" />
+                        <TableColumn fx:id="cAmorCC" prefWidth="75.0" text="C_AMORCC" />
+                        <TableColumn fx:id="cTermCC" prefWidth="75.0" text="C_TERMCC" />
+                        <TableColumn fx:id="cUnamCC" prefWidth="75.0" text="C_UNAMCC" />
                     </columns>
                   </TableView>
                </content>
@@ -141,6 +141,11 @@
                </HBox.margin>
             </Button>
             <Button fx:id="copyTransfersButton" disable="true" layoutX="308.0" layoutY="10.0" mnemonicParsing="false" onAction="#copyTransfers" text="Copy 'Transfers'">
+               <HBox.margin>
+                  <Insets right="10.0" />
+               </HBox.margin>
+            </Button>
+            <Button fx:id="copyAmortButton" disable="true" layoutX="485.0" layoutY="10.0" mnemonicParsing="false" onAction="#copyAmort" text="Copy 'Amort'">
                <HBox.margin>
                   <Insets right="10.0" />
                </HBox.margin>

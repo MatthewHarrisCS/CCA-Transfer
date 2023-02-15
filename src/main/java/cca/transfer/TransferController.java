@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -33,6 +34,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -76,12 +78,14 @@ public class TransferController implements Initializable {
         nrUnamCC, cNewCC, cAmorCC, cTermCC, cUnamCC;
 
     @FXML private Label status;
+    @FXML private Tab amortTab;
     @FXML private Button 
-        copyTransfersButton, copyResidentsButton, 
+        copyTransfersButton, copyResidentsButton, copyAmortButton,
         exportButton, level3Button, level4Button, level5Button;
 
     private ObservableList<Resident> residentList = FXCollections.observableArrayList();
     private ObservableList<TransferResident> transferList = FXCollections.observableArrayList();
+    private ObservableList<Amort> amortList = FXCollections.observableArrayList();
 
     private boolean level3, level4;
 
@@ -156,6 +160,7 @@ public class TransferController implements Initializable {
         // Attach the lists to their respective table
         residentTable.setItems(residentList);
         transferTable.setItems(transferList);
+        amortTable.setItems(amortList);
     }
 
     // setLevel(): set the level markers for 3 or 4 if either
@@ -216,18 +221,28 @@ public class TransferController implements Initializable {
             XSSFWorkbook workbook = new XSSFWorkbook(excel);
             XSSFSheet sheet = workbook.getSheet("INPUT");
             
-            // Call the function to import the Residents and transfer tables
+            // Call the function to import the Residents
             importResidents(sheet);
+
+            // Get the last fiscal date closing
+            SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd");
+            String date = df.format(sheet.getRow(1).getCell(24).getDateCellValue());
 
             // Close the stream to the spreadsheet
             workbook.close();
             excel.close();
 
+            // Create the Transfers and Amort tables
+            createTransfers();
+            createAmort();
+            amortTab.setText("Amort" + date);
+
             // Write success message and give user access to the function buttons.
             status.setText("Database imported successfully");
+            exportButton.setDisable(false);
             copyTransfersButton.setDisable(false);
             copyResidentsButton.setDisable(false);
-            exportButton.setDisable(false);
+            copyAmortButton.setDisable(false);
 
         } catch (IOException|IllegalStateException e) {
             // If exception, print message to status
@@ -438,15 +453,11 @@ public class TransferController implements Initializable {
                 transfer1to2, transfer1to3, transfer1to4, transfer1to5,
                 transfer2to2, transfer2to3, transfer2to4, transfer2to5));
         }
-
-        // Import the transfers using the newly created residentList
-        importTransfers();
     }
-
     
-    // importTransfers(): access the residentList and add any transfers
+    // createTransfers(): access the residentList and add any transfers
     //                    found into the transferList as a new entry
-    private void importTransfers() {
+    private void createTransfers() {
         
         // Clear the current transfer list
         transferList.clear();
@@ -458,14 +469,14 @@ public class TransferController implements Initializable {
             resident = residentList.get(i);
 
             // Call addTransfer for each of the potential transfers
-            addTransfer(resident, 1, 2, resident.transfer1to2);
-            addTransfer(resident, 1, 3, resident.transfer1to3);
-            addTransfer(resident, 1, 4, resident.transfer1to4);
-            addTransfer(resident, 1, 5, resident.transfer1to5);
-            addTransfer(resident, 2, 2, resident.transfer2to2);
-            addTransfer(resident, 2, 3, resident.transfer2to3);
-            addTransfer(resident, 2, 4, resident.transfer2to4);
-            addTransfer(resident, 2, 5, resident.transfer2to5);
+            addTransfer(resident, 1, 2, resident.getTransfer1to2());
+            addTransfer(resident, 1, 3, resident.getTransfer1to3());
+            addTransfer(resident, 1, 4, resident.getTransfer1to4());
+            addTransfer(resident, 1, 5, resident.getTransfer1to5());
+            addTransfer(resident, 2, 2, resident.getTransfer2to2());
+            addTransfer(resident, 2, 3, resident.getTransfer2to3());
+            addTransfer(resident, 2, 4, resident.getTransfer2to4());
+            addTransfer(resident, 2, 5, resident.getTransfer2to5());
         }
     }
 
@@ -476,7 +487,32 @@ public class TransferController implements Initializable {
         // if the transfer date exists, add an entry to transferList
         // with the information for the transferred resident
         if (transfer != null) {
-            transferList.add(new TransferResident(resident.refNo, resident.last, resident.first, res, into, transfer));
+            transferList.add(new TransferResident(
+                resident.getRefNo(), 
+                resident.getLast(), 
+                resident.getFirst(), 
+                res, into, transfer));
+        }
+    }
+
+    // createAmort(): access the residentList and add fees found
+    //                into the amortization table as a new entry
+    private void createAmort() {
+        
+        amortList.clear();
+        Resident resident;
+
+        // Go through the entire residentList
+        for (int i = 0; i < residentList.size(); i++) {
+            // Get the resident at the current index
+            resident = residentList.get(i);
+
+            // Add the resident's balances together and add them to the list
+            amortList.add(new Amort(
+                resident.getRefNo(), 
+                (resident.getRefundFee1() + resident.getRefundFee2()), 
+                (resident.getNonrefFee1() + resident.getNonrefFee2()),
+                (resident.getComFee1() + resident.getComFee2())));
         }
     }
 
@@ -559,6 +595,50 @@ public class TransferController implements Initializable {
         status.setText("Copied to clipboard");
     }
 
+    @FXML
+    private void copyAmort() {
+        // Set the status message and get the clipboard
+        status.setText("Copying to clipboard...");
+        String db = "";
+        Clipboard clip = Clipboard.getSystemClipboard();
+        ClipboardContent x = new ClipboardContent();
+                
+        // Add each of the RLA values to a string with linebreaks
+        for (int i = 0; i < amortList.size(); i++) {
+            Amort amort = amortList.get(i);
+            db +=
+                amort.getRef() + "\t" + 
+                amort.getLifeX1() + "\t" +  
+                amort.getLifeX2() + "\t" + 
+                amort.getRNewFees() + "\t" + 
+                amort.getRActRef() + "\t" + 
+                amort.getRFeeBal() + "\t" + 
+                amort.getNrActRef() + "\t" + 
+                amort.getCActRef() + "\t" + 
+                amort.getNrNewSl() + "\t" + 
+                amort.getNrAmorSl() + "\t" + 
+                amort.getNrTermSl() + "\t" + 
+                amort.getNrUnamSl() + "\t" +
+                amort.getCNewSl() + "\t" + 
+                amort.getCAmorSl() + "\t" + 
+                amort.getCTermSl() + "\t" + 
+                amort.getCUnamSl() + "\t" + 
+                amort.getNrNewCC() + "\t" + 
+                amort.getNrAmorCC() + "\t" + 
+                amort.getNrTermCC() + "\t" + 
+                amort.getNrUnamCC() + "\t" + 
+                amort.getCNewCC() + "\t" + 
+                amort.getCAmorCC() + "\t" + 
+                amort.getCTermCC() + "\t" + 
+                amort.getCUnamCC() + "\n"; 
+        }
+                
+        // Add the RLA value string to the clipboard
+        x.putString(db);
+        clip.setContent(x);
+        status.setText("Copied to clipboard");
+    }
+
     // export(): export the resident and transfer tables to a new Excel sheet
     @FXML
     private void export() {
@@ -588,6 +668,7 @@ public class TransferController implements Initializable {
             // Copy the values into the workbook
             exportResidents(workbook);
             exportTransfers(workbook);
+            exportAmort(workbook);
             
             // Output the values to the Excel spreadsheet
             FileOutputStream excelOut = new FileOutputStream(excel);
@@ -740,7 +821,7 @@ public class TransferController implements Initializable {
         
         XSSFSheet sheet;
         Row row;
-        TransferResident resident;
+        TransferResident transfer;
             
         // Create the Transfers sheet if it does not exist, otherwise reformat it
         if (workbook.getSheet("Transfers") == null) {
@@ -763,12 +844,6 @@ public class TransferController implements Initializable {
         row.createCell(3).setCellValue("Res");
         row.createCell(4).setCellValue("Into");
         row.createCell(5).setCellValue("Date");
-        sheet.autoSizeColumn(0);
-        sheet.autoSizeColumn(1);
-        sheet.autoSizeColumn(2);
-        sheet.autoSizeColumn(3);
-        sheet.autoSizeColumn(4);
-        sheet.autoSizeColumn(5);
 
         // Set styling for the row
         CellStyle headerStyle = workbook.createCellStyle();
@@ -791,17 +866,122 @@ public class TransferController implements Initializable {
         // Iterate through the transferList and add each entry as an Excel row
         for (int i = 0; i < transferList.size(); i++) {
             row = sheet.createRow(i+1);
-            resident = transferList.get(i);
-            row.createCell(0).setCellValue(resident.getRefNo());
-            row.createCell(1).setCellValue(resident.getLast());
-            row.createCell(2).setCellValue(resident.getFirst());
-            row.createCell(3).setCellValue(resident.getRes());
-            row.createCell(4).setCellValue(resident.getInto());
-            row.createCell(5).setCellValue(resident.getDate());
+            transfer = transferList.get(i);
+            row.createCell(0).setCellValue(transfer.getRefNo());
+            row.createCell(1).setCellValue(transfer.getLast());
+            row.createCell(2).setCellValue(transfer.getFirst());
+            row.createCell(3).setCellValue(transfer.getRes());
+            row.createCell(4).setCellValue(transfer.getInto());
+            row.createCell(5).setCellValue(transfer.getDate());
         }
 
         // Resize the columns
-        for (int i = 0; i <= 26; i++) {
+        for (int i = 0; i <= 5; i++) {
+            sheet.autoSizeColumn(i);
+        }
+    }
+
+    // exportTransfers(): create a new Excel sheet and copy 
+    //                    the AmortList onto it
+    private void exportAmort(XSSFWorkbook workbook) {
+        
+        XSSFSheet sheet;
+        Row row;
+        Amort amort;
+        String amortSheet = amortTab.getText();
+            
+        // Create the Amort sheet if it does not exist, otherwise reformat it
+        if (workbook.getSheet(amortSheet) == null) {
+            sheet = workbook.createSheet(amortSheet);
+        } else {
+            sheet = workbook.getSheet(amortSheet);
+            for (int i = 0; i <= sheet.getLastRowNum(); i++) {
+                sheet.removeRow(sheet.getRow(i));
+            }
+        }
+
+        // Move Amort to the third position and create the header row
+        workbook.setSheetOrder(amortSheet, 2);
+        row = sheet.createRow(0);
+
+        // Set headers for the row
+        row.createCell(0).setCellValue("REF");
+        row.createCell(1).setCellValue("LIFEX1");
+        row.createCell(2).setCellValue("LIFEX2");
+        row.createCell(3).setCellValue("R_NEWFEES");
+        row.createCell(4).setCellValue("R_ACTREF");
+        row.createCell(5).setCellValue("R_FEEBAL");
+        row.createCell(6).setCellValue("NR_ACTREF");
+        row.createCell(7).setCellValue("C_ACTREF");
+        row.createCell(8).setCellValue("NR_NEWSL");
+        row.createCell(9).setCellValue("NR_AMORSL");
+        row.createCell(10).setCellValue("NR_TERMSL");
+        row.createCell(11).setCellValue("NR_UNAMSL");
+        row.createCell(12).setCellValue("C_NEWSL");
+        row.createCell(13).setCellValue("C_AMORSL");
+        row.createCell(14).setCellValue("C_TERMSL");
+        row.createCell(15).setCellValue("C_UNAMSL");
+        row.createCell(16).setCellValue("NR_NEWCC");
+        row.createCell(17).setCellValue("NR_AMORCC");
+        row.createCell(18).setCellValue("NR_TERMCC");
+        row.createCell(19).setCellValue("NR_UNAMCC");
+        row.createCell(20).setCellValue("C_NEWCC");
+        row.createCell(21).setCellValue("C_AMORCC");
+        row.createCell(22).setCellValue("C_TERMCC");
+        row.createCell(23).setCellValue("C_UNAMCC");
+
+        // Set styling for the row
+        CellStyle headerStyle = workbook.createCellStyle();
+        Font font = workbook.createFont();
+        font.setBold(true);
+        headerStyle.setFont(font);
+        headerStyle.setBorderBottom(BorderStyle.MEDIUM);
+        headerStyle.setAlignment(HorizontalAlignment.CENTER);
+        for (int i = 0; i <= 23; i++) {
+            row.getCell(i).setCellStyle(headerStyle);
+        }
+        
+        // Create and set double formatting
+        CellStyle moneyStyle = workbook.createCellStyle();
+        CreationHelper ch = workbook.getCreationHelper();
+        moneyStyle.setDataFormat(ch.createDataFormat().getFormat("#,##0.00"));
+
+        for (int i = 1; i <= 23; i++) {
+            sheet.setDefaultColumnStyle(i, moneyStyle);
+        }
+
+        // Iterate through the amortList and add each entry as an Excel row
+        for (int i = 0; i < amortList.size(); i++) {
+            row = sheet.createRow(i+1);
+            amort = amortList.get(i);
+            row.createCell(0).setCellValue(amort.getRef());
+            row.createCell(1).setCellValue(amort.getLifeX1()); 
+            row.createCell(2).setCellValue(amort.getLifeX2());
+            row.createCell(3).setCellValue(amort.getRNewFees());
+            row.createCell(4).setCellValue(amort.getRActRef());
+            row.createCell(5).setCellValue(amort.getRFeeBal());
+            row.createCell(6).setCellValue(amort.getNrActRef());
+            row.createCell(7).setCellValue(amort.getCActRef());
+            row.createCell(8).setCellValue(amort.getNrNewSl());
+            row.createCell(9).setCellValue(amort.getNrAmorSl());
+            row.createCell(10).setCellValue(amort.getNrTermSl());
+            row.createCell(11).setCellValue(amort.getNrUnamSl());
+            row.createCell(12).setCellValue(amort.getCNewSl());
+            row.createCell(13).setCellValue(amort.getCAmorSl());
+            row.createCell(14).setCellValue(amort.getCTermSl());
+            row.createCell(15).setCellValue(amort.getCUnamSl());
+            row.createCell(16).setCellValue(amort.getNrNewCC());
+            row.createCell(17).setCellValue(amort.getNrAmorCC());
+            row.createCell(18).setCellValue(amort.getNrTermCC());
+            row.createCell(19).setCellValue(amort.getNrUnamCC());
+            row.createCell(20).setCellValue(amort.getCNewCC());
+            row.createCell(21).setCellValue(amort.getCAmorCC());
+            row.createCell(22).setCellValue(amort.getCTermCC());
+            row.createCell(23).setCellValue(amort.getCUnamCC());
+        }
+
+        // Resize the columns
+        for (int i = 0; i <= 23; i++) {
             sheet.autoSizeColumn(i);
         }
     }
