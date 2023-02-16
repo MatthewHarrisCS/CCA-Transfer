@@ -882,21 +882,20 @@ public class TransferController implements Initializable {
         
         XSSFSheet sheet;
         Row row;
-        Amort amort;
-        String amortSheet = amortTab.getText();
+        Amort amort;;
             
         // Create the Amort sheet if it does not exist, otherwise reformat it
-        if (workbook.getSheet(amortSheet) == null) {
-            sheet = workbook.createSheet(amortSheet);
+        if (workbook.getSheet("AmortTEMPLATE") == null) {
+            sheet = workbook.createSheet("AmortTEMPLATE");
         } else {
-            sheet = workbook.getSheet(amortSheet);
+            sheet = workbook.getSheet("AmortTEMPLATE");
             for (int i = 0; i <= sheet.getLastRowNum(); i++) {
                 sheet.removeRow(sheet.getRow(i));
             }
         }
 
         // Move Amort to the third position and create the header row
-        workbook.setSheetOrder(amortSheet, 2);
+        workbook.setSheetOrder("AmortTEMPLATE", 2);
         row = sheet.createRow(0);
 
         // Set headers for the row

@@ -90,7 +90,7 @@
                   </TableView>
                </content>
             </Tab>
-            <Tab fx:id="amortTab" text="Amort">
+            <Tab fx:id="amortTab" text="AmortTEMPLATE">
                <content>
                   <TableView fx:id="amortTable" prefHeight="2000.0">
                     <columns>
