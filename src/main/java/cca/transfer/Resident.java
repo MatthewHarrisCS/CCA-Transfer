@@ -11,7 +11,8 @@ public class Resident {
         transfer1to2, transfer1to3, transfer1to4, transfer1to5, 
         transfer2to2, transfer2to3, transfer2to4, transfer2to5;
     private double entryFee1, entryFee2, nonrefFee1, nonrefFee2, 
-        refundFee1, refundFee2, comFee1, comFee2;
+        refundFee1, refundFee2, comFee1, comFee2, 
+        nonrefBal, refBal, comBal;
 
     public Resident(int refNo, String last, String first, String unitNo, int unitType, int sex1, int sex2,
                     LocalDate birthDate1, LocalDate birthDate2, LocalDate entryDate1, LocalDate entryDate2,
@@ -19,7 +20,8 @@ public class Resident {
                     LocalDate termDate1, LocalDate termDate2, double nonrefFee1, double nonrefFee2,
                     double refundFee1, double refundFee2, double comFee1, double comFee2, int decline, int fso, int contract, 
                     LocalDate transfer1to2, LocalDate transfer1to3, LocalDate transfer1to4, LocalDate transfer1to5, 
-                    LocalDate transfer2to2, LocalDate transfer2to3, LocalDate transfer2to4, LocalDate transfer2to5) {
+                    LocalDate transfer2to2, LocalDate transfer2to3, LocalDate transfer2to4, LocalDate transfer2to5,
+                    double nonrefBal, double refBal, double comBal) {
         this.refNo        = refNo;
         this.last         = last;
         this.first        = first;
@@ -54,6 +56,9 @@ public class Resident {
         this.transfer2to3 = transfer2to3;
         this.transfer2to4 = transfer2to4;
         this.transfer2to5 = transfer2to5;
+        this.nonrefBal = nonrefBal;
+        this.refBal = refBal;
+        this.comBal = comBal;
     }
 
     public Resident() {
@@ -227,5 +232,17 @@ public class Resident {
     
     public LocalDate getTransfer2to5() {
         return transfer2to5; 
+    }
+
+    public double getNonrefBal() {
+        return nonrefBal;
+    }
+
+    public double getRefBal() {
+        return refBal;
+    }
+
+    public double getComBal() {
+        return comBal;
     }
 }

@@ -259,7 +259,8 @@ public class TransferController implements Initializable {
             deathDate1, deathDate2, termDate1, termDate2,
             transfer1to2, transfer1to3, transfer1to4, transfer1to5,
             transfer2to2, transfer2to3, transfer2to4, transfer2to5;
-        double entryFee1, nonrefFee1, refundFee1, comFee1;
+        double entryFee1, nonrefFee1, refundFee1, comFee1,
+            nonrefBal, refBal, comBal;
         Date bd1, bd2, ed1, ed2, dd1, dd2, td1, td2, 
             t12, t13, t14, t15, t22, t23, t24, t25;
 
@@ -268,12 +269,13 @@ public class TransferController implements Initializable {
         // Column numbers for everything than can shift due to extra levels of care
         int t14Col, t15Col, dd1Col, td1Col, sex2Col, bd2Col, ed2Col, 
             t22Col, t23Col, t24Col, t25Col, dd2Col, td2Col, 
-            entryFee1Col, nonrefFee1Col, refundFee1Col, comFee1Col;
+            entryFee1Col, nonrefFee1Col, refundFee1Col, comFee1Col,
+            nonrefBalCol, refBalCol, comBalCol;
 
         if (level3) {
             // If 3 marker set, use the column values for 3-Level sheets
-            t14Col = 0;
-            t15Col = 0;
+            t14Col = 31; // NOT USED (31 is a blank column for unused cells)
+            t15Col = 31; // NOT USED
             dd1Col = 11;
             td1Col = 12;
             sex2Col = 13;
@@ -281,18 +283,21 @@ public class TransferController implements Initializable {
             ed2Col = 15;
             t22Col = 16;
             t23Col = 17;
-            t24Col = 0;
-            t25Col = 0;
+            t24Col = 31; // NOT USED
+            t25Col = 31; // NOT USED
             dd2Col = 18;
             td2Col = 19;
             entryFee1Col = 20;
             nonrefFee1Col = 21;
             refundFee1Col = 22;
             comFee1Col = 23;
+            nonrefBalCol = 24;
+            refBalCol = 25;
+            comBalCol = 26;
         } else if (level4) {
             // If 4 marker set, use the column values for 4-Level sheets
             t14Col = 11;
-            t15Col = 0;
+            t15Col = 31; // NOT USED
             dd1Col = 12;
             td1Col = 13;
             sex2Col = 14;
@@ -301,13 +306,16 @@ public class TransferController implements Initializable {
             t22Col = 17;
             t23Col = 18;
             t24Col = 19;
-            t25Col = 0;
+            t25Col = 31; // NOT USED
             dd2Col = 20;
             td2Col = 21;
             entryFee1Col = 22;
             nonrefFee1Col = 23;
             refundFee1Col = 24;
             comFee1Col = 25;
+            nonrefBalCol = 26;
+            refBalCol = 27;
+            comBalCol = 28;
         } else {
             // If neither marker set, use the column values for 5-Level sheets
             t14Col = 11;
@@ -327,6 +335,9 @@ public class TransferController implements Initializable {
             nonrefFee1Col = 25;
             refundFee1Col = 26;
             comFee1Col = 27;
+            nonrefBalCol = 28;
+            refBalCol = 29;
+            comBalCol = 30;
         }
 
         for (int i = 9; i <= sheet.getLastRowNum(); i++) {
@@ -341,7 +352,7 @@ public class TransferController implements Initializable {
 
             // Format empty cells to avoid errors
             Cell cell;
-            for (int j = 0; j < row.getLastCellNum(); j++) {
+            for (int j = 0; j <= 31; j++) {
 
                 // Get the current cell
                 cell = row.getCell(j);
@@ -429,6 +440,11 @@ public class TransferController implements Initializable {
             nonrefFee1 = row.getCell(nonrefFee1Col).getNumericCellValue();
             refundFee1 = row.getCell(refundFee1Col).getNumericCellValue();
             comFee1 = row.getCell(comFee1Col).getNumericCellValue();
+
+            // Get balances
+            nonrefBal = row.getCell(nonrefBalCol).getNumericCellValue();
+            refBal = row.getCell(refBalCol).getNumericCellValue();
+            comBal = row.getCell(comBalCol).getNumericCellValue();
             
             // Create a new Resident entry and add it to the ResidentList
             residentList.add(new Resident(
@@ -445,7 +461,8 @@ public class TransferController implements Initializable {
                 comFee1, /* comFee2 */ 0.0, 
                 decline, /* fso */ 0, contract,
                 transfer1to2, transfer1to3, transfer1to4, transfer1to5,
-                transfer2to2, transfer2to3, transfer2to4, transfer2to5));
+                transfer2to2, transfer2to3, transfer2to4, transfer2to5,
+                nonrefBal, refBal, comBal));
         }
     }
     
@@ -501,12 +518,12 @@ public class TransferController implements Initializable {
             // Get the resident at the current index
             resident = residentList.get(i);
 
-            // Add the resident's balances together and add them to the list
+            // Add the resident's balances to the list
             amortList.add(new Amort(
                 resident.getRefNo(), 
-                (resident.getRefundFee1() + resident.getRefundFee2()), 
-                (resident.getNonrefFee1() + resident.getNonrefFee2()),
-                (resident.getComFee1() + resident.getComFee2())));
+                resident.getNonrefBal(), 
+                resident.getRefBal(),
+                resident.getComBal()));
         }
     }
 
@@ -1006,8 +1023,8 @@ public class TransferController implements Initializable {
         Row row = sheet.getRow(rowNo);
 
         // Get the "Declining? (Y/N)" column and add the values to their respective index
-        while (row.getCell(5) != null) {
-            rowBool = ((row.getCell(5).getStringCellValue().equals("Y")) ? 1 : 0);
+        while (row.getCell(4) != null) {
+            rowBool = ((row.getCell(4).getStringCellValue().equals("Y")) ? 1 : 0);
             declineList.add(rowBool);
             rowNo++;
             row = sheet.getRow(rowNo);
