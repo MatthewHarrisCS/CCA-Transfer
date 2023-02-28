@@ -32,6 +32,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TableColumn;
@@ -77,6 +78,7 @@ public class TransferController implements Initializable {
         nrUnamCC, cNewCC, cAmorCC, cTermCC, cUnamCC;
 
     @FXML private Label status;
+    @FXML private Hyperlink readmore;
     @FXML private Tab amortTab;
     @FXML private Button 
         copyTransfersButton, copyResidentsButton, copyAmortButton,
@@ -238,12 +240,11 @@ public class TransferController implements Initializable {
             copyResidentsButton.setDisable(false);
             copyAmortButton.setDisable(false);
 
-        } catch (IOException|IllegalStateException e) {
+        } catch (IOException|IllegalStateException|NullPointerException e) {
             // If exception, print message to status
             status.setText("" + e);
-        } catch (NullPointerException e) {
-            // If canceled, don't display error message
-            status.setText("");
+            readmore.setText(" Read More");
+            App.fullError = e.getStackTrace();
         }
     }
 
@@ -656,6 +657,7 @@ public class TransferController implements Initializable {
     private void export() {
         
         status.setText("Exporting...");
+        readmore.setText("");
         FileChooser fc = new FileChooser();
         fc.setTitle("Export Transfer Table");
         fc.getExtensionFilters().add(new ExtensionFilter("Excel Files", "*.xlsx"));
@@ -691,12 +693,11 @@ public class TransferController implements Initializable {
             excelOut.close();
             status.setText("Table exported successfully");
 
-        } catch (IOException e) {
+        } catch (IOException|NullPointerException e) {
             // If exception, print message to status
             status.setText("" + e);
-        } catch (NullPointerException e) {
-            // If canceled, don't display error message
-            status.setText("");
+            readmore.setText(" Read More");
+            App.fullError = e.getStackTrace();
         }
     }
 
@@ -1038,8 +1039,6 @@ public class TransferController implements Initializable {
     @FXML
     private void info() {
         try {
-            // Set the internal error message
-
             // Access the .fxml file for the dialog box
             FXMLLoader fxmlLoader = new FXMLLoader();
 
@@ -1051,12 +1050,38 @@ public class TransferController implements Initializable {
                 fxmlLoader.setLocation((App.class.getResource("info5.fxml")));
             }
 
+            DialogPane infoDialog = fxmlLoader.load();
+
+            // Initialize the dialog box
+            Dialog<ButtonType> dialog = new Dialog<>();
+            dialog.setDialogPane(infoDialog);
+            dialog.setTitle("Information - LifeCalc Transfer Table Generator");
+            Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
+            stage.getIcons().add(new Image(App.class.getResourceAsStream("LC.png")));
+
+            // Display the dialog box
+            dialog.showAndWait();
+            
+        } catch (IOException e) {  
+            // If exception, print message to status
+            status.setText("DIALOG BOX ERROR: " + e.getMessage());
+        }
+    }
+
+    // info(): display the information window
+    @FXML
+    private void error() {
+        try {
+            // Access the .fxml file for the dialog box
+            FXMLLoader fxmlLoader = new FXMLLoader();
+            fxmlLoader.setLocation((App.class.getResource("error.fxml")));
+            
             DialogPane errDialog = fxmlLoader.load();
 
             // Initialize the dialog box
             Dialog<ButtonType> dialog = new Dialog<>();
             dialog.setDialogPane(errDialog);
-            dialog.setTitle("Information - LifeCalc Transfer Table Generator");
+            dialog.setTitle("Error - LifeCalc Transfer Table Generator");
             Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
             stage.getIcons().add(new Image(App.class.getResourceAsStream("LC.png")));
 
