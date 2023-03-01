@@ -1068,7 +1068,6 @@ public class TransferController implements Initializable {
             
         } catch (IOException e) {  
             // If exception, print message to status
-            e.printStackTrace();
             status.setText("DIALOG BOX ERROR: " + e.getMessage());
         }
     }
@@ -1095,13 +1094,11 @@ public class TransferController implements Initializable {
             
         } catch (IOException e) {  
             // If exception, print message to status
-            e.printStackTrace();
             status.setText("DIALOG BOX ERROR: " + e.getMessage());
         }
     }
 
     private void logError(Exception e) {
-        e.printStackTrace();
         status.setText("" + e);
         readmore.setText("Read More");
         readmore.setDisable(false);
@@ -1109,6 +1106,7 @@ public class TransferController implements Initializable {
         PrintWriter pe = new PrintWriter(se);
         e.printStackTrace(pe);
         App.fullError = se.toString();
+        pe.close();
     }
 
     private void noError() {
