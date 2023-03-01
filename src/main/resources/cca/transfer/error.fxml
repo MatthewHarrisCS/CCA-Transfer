@@ -5,11 +5,11 @@
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<DialogPane xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
+<DialogPane xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cca.transfer.ErrorController">
    <content>
       <AnchorPane prefWidth="400.0">
          <children>
-            <TextArea fx:id="err" layoutX="16.0" layoutY="17.0" prefHeight="363.0" prefWidth="419.0" />
+            <TextArea fx:id="err" layoutX="24.0" layoutY="20.0" prefHeight="300.0" prefWidth="800.0" />
          </children>
       </AnchorPane>
    </content>

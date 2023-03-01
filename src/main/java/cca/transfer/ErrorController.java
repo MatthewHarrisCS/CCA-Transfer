@@ -13,7 +13,8 @@ public class ErrorController implements Initializable{
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        System.out.println(App.fullError.toString());
-        err.setText(App.fullError.toString());
+        System.out.println("Testing...");
+        System.out.println(App.fullError);
+        err.setText(App.fullError);
     }
 }

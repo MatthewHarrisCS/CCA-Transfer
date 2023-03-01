@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -240,11 +242,12 @@ public class TransferController implements Initializable {
             copyResidentsButton.setDisable(false);
             copyAmortButton.setDisable(false);
 
-        } catch (IOException|IllegalStateException|NullPointerException e) {
+            // Clear the error log if successful
+            noError();
+
+        } catch (Exception e) {
             // If exception, print message to status
-            status.setText("" + e);
-            readmore.setText(" Read More");
-            App.fullError = e.getStackTrace();
+            logError(e);
         }
     }
 
@@ -693,11 +696,12 @@ public class TransferController implements Initializable {
             excelOut.close();
             status.setText("Table exported successfully");
 
-        } catch (IOException|NullPointerException e) {
+            // Clear the error log if successful
+            noError();
+
+        } catch (Exception e) {
             // If exception, print message to status
-            status.setText("" + e);
-            readmore.setText(" Read More");
-            App.fullError = e.getStackTrace();
+            logError(e);
         }
     }
 
@@ -1064,6 +1068,7 @@ public class TransferController implements Initializable {
             
         } catch (IOException e) {  
             // If exception, print message to status
+            e.printStackTrace();
             status.setText("DIALOG BOX ERROR: " + e.getMessage());
         }
     }
@@ -1090,7 +1095,25 @@ public class TransferController implements Initializable {
             
         } catch (IOException e) {  
             // If exception, print message to status
+            e.printStackTrace();
             status.setText("DIALOG BOX ERROR: " + e.getMessage());
         }
+    }
+
+    private void logError(Exception e) {
+        e.printStackTrace();
+        status.setText("" + e);
+        readmore.setText("Read More");
+        readmore.setDisable(false);
+        StringWriter se = new StringWriter();
+        PrintWriter pe = new PrintWriter(se);
+        e.printStackTrace(pe);
+        App.fullError = se.toString();
+    }
+
+    private void noError() {
+        readmore.setText("");
+        readmore.setDisable(true);
+        App.fullError = "";
     }
 }

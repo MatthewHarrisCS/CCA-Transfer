@@ -15,7 +15,7 @@ import java.io.IOException;
 public class App extends Application {
 
     private static Scene scene;
-    public static StackTraceElement[] fullError;
+    public static String fullError;
 
     @Override
     public void start(Stage stage) throws IOException {
