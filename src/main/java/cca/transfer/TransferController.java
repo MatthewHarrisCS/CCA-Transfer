@@ -379,7 +379,7 @@ public class TransferController implements Initializable {
             }
 
             // Get the unit type, and use the index to find the decline result
-            contract = (int) row.getCell(5).getNumericCellValue();
+            contract = (int) row.getCell(5).getNumericCellValue() - 1;
             decline = declineList.get(contract);
 
             // Check if the sex of 1st and 2nd is male, female, or null
@@ -524,9 +524,9 @@ public class TransferController implements Initializable {
 
             // Add the resident's balances to the list
             amortList.add(new Amort(
-                resident.getRefNo(), 
-                resident.getNonrefBal(), 
+                resident.getRefNo(),
                 resident.getRefBal(),
+                resident.getNonrefBal(),
                 resident.getComBal()));
         }
     }
@@ -623,30 +623,30 @@ public class TransferController implements Initializable {
         for (int i = 0; i < amortList.size(); i++) {
             Amort amort = amortList.get(i);
             db +=
-                amort.getRef() + "\t" + 
-                amort.getLifeEx1() + "\t" +  
-                amort.getLifeEx2() + "\t" + 
+                amort.getRef()      + "\t" + 
+                amort.getLifeEx1()  + "\t" +  
+                amort.getLifeEx2()  + "\t" + 
                 amort.getRNewFees() + "\t" + 
-                amort.getRActRef() + "\t" + 
-                amort.getRFeeBal() + "\t" + 
+                amort.getRActRef()  + "\t" + 
+                amort.getRFeeBal()  + "\t" + 
                 amort.getNrActRef() + "\t" + 
-                amort.getCActRef() + "\t" + 
-                amort.getNrNewSl() + "\t" + 
+                amort.getCActRef()  + "\t" + 
+                amort.getNrNewSl()  + "\t" + 
                 amort.getNrAmorSl() + "\t" + 
                 amort.getNrTermSl() + "\t" + 
                 amort.getNrUnamSl() + "\t" +
-                amort.getCNewSl() + "\t" + 
-                amort.getCAmorSl() + "\t" + 
-                amort.getCTermSl() + "\t" + 
-                amort.getCUnamSl() + "\t" + 
-                amort.getNrNewCC() + "\t" + 
+                amort.getCNewSl()   + "\t" + 
+                amort.getCAmorSl()  + "\t" + 
+                amort.getCTermSl()  + "\t" + 
+                amort.getCUnamSl()  + "\t" + 
+                amort.getNrNewCC()  + "\t" + 
                 amort.getNrAmorCC() + "\t" + 
                 amort.getNrTermCC() + "\t" + 
                 amort.getNrUnamCC() + "\t" + 
-                amort.getCNewCC() + "\t" + 
-                amort.getCAmorCC() + "\t" + 
-                amort.getCTermCC() + "\t" + 
-                amort.getCUnamCC() + "\n"; 
+                amort.getCNewCC()   + "\t" + 
+                amort.getCAmorCC()  + "\t" + 
+                amort.getCTermCC()  + "\t" + 
+                amort.getCUnamCC()  + "\n"; 
         }
                 
         // Add the RLA value string to the clipboard
