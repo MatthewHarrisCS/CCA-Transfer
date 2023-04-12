@@ -379,7 +379,7 @@ public class TransferController implements Initializable {
             }
 
             // Get the unit type, and use the index to find the decline result
-            contract = (int) row.getCell(5).getNumericCellValue() - 1;
+            contract = (int) row.getCell(5).getNumericCellValue();
             decline = declineList.get(contract);
 
             // Check if the sex of 1st and 2nd is male, female, or null
@@ -463,7 +463,7 @@ public class TransferController implements Initializable {
                 nonrefFee1, /* nonrefFee2 */ 0.0, 
                 refundFee1, /*refundFee2*/ 0.0, 
                 comFee1, /* comFee2 */ 0.0, 
-                decline, /* fso */ 0, contract,
+                decline, /* fso */ 0, contract - 1,
                 transfer1to2, transfer1to3, transfer1to4, transfer1to5,
                 transfer2to2, transfer2to3, transfer2to4, transfer2to5,
                 nonrefBal, refBal, comBal));
