@@ -669,7 +669,6 @@ public class TransferController implements Initializable {
         File excel = fc.showSaveDialog(transferTable.getScene().getWindow());
 
         try {
-            
             XSSFWorkbook workbook;
 
             // Create the file if it does not currently exist
@@ -796,7 +795,7 @@ public class TransferController implements Initializable {
         sheet.setDefaultColumnStyle(22, moneyStyle);
 
         // Iterate through the residentList and add each entry as an Excel row
-        for (int i = 1; i < residentList.size(); i++) {
+        for (int i = 1; i <= residentList.size(); i++) {
             row = sheet.createRow(i);
             resident = residentList.get(i-1);
             row.createCell(0).setCellValue(resident.getRefNo());
