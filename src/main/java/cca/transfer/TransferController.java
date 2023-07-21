@@ -218,10 +218,10 @@ public class TransferController implements Initializable {
         File home = new File(System.getProperty("user.dir"));
         fc.setInitialDirectory(home);
         
-        try {
+        try (FileInputStream excel = new FileInputStream(fc.showOpenDialog(transferTable.getScene().getWindow()));
+             XSSFWorkbook workbook = new XSSFWorkbook(excel);) {
             // Get the spreadsheet from the user and open the INPUT sheet
-            FileInputStream excel = new FileInputStream(fc.showOpenDialog(transferTable.getScene().getWindow()));
-            XSSFWorkbook workbook = new XSSFWorkbook(excel);
+            
             XSSFSheet sheet = workbook.getSheet("INPUT");
             
             // Call the function to import the Residents
@@ -271,7 +271,7 @@ public class TransferController implements Initializable {
         List<Integer> declineList = getDecline(sheet.getWorkbook());
 
         // Column numbers for everything than can shift due to extra levels of care
-        int t14Col, t15Col, dd1Col, td1Col, sex2Col, bd2Col, ed2Col, 
+        int t14Col, t15Col, dd1Col, td1Col, sx2Col, bd2Col, ed2Col, 
             t22Col, t23Col, t24Col, t25Col, dd2Col, td2Col, 
             entryFee1Col, nonrefFee1Col, refundFee1Col, comFee1Col,
             nonrefBalCol, refBalCol, comBalCol;
@@ -282,7 +282,7 @@ public class TransferController implements Initializable {
             t15Col = 31; // NOT USED
             dd1Col = 11;
             td1Col = 12;
-            sex2Col = 13;
+            sx2Col = 13;
             bd2Col = 14;
             ed2Col = 15;
             t22Col = 16;
@@ -291,20 +291,21 @@ public class TransferController implements Initializable {
             t25Col = 31; // NOT USED
             dd2Col = 18;
             td2Col = 19;
-            entryFee1Col = 20;
+            // Fee columns
+            entryFee1Col  = 20;
             nonrefFee1Col = 21;
             refundFee1Col = 22;
-            comFee1Col = 23;
-            nonrefBalCol = 24;
-            refBalCol = 25;
-            comBalCol = 26;
+            comFee1Col    = 23;
+            nonrefBalCol  = 24;
+            refBalCol     = 25;
+            comBalCol     = 26;
         } else if (level4) {
             // If 4 marker set, use the column values for 4-Level sheets
             t14Col = 11;
             t15Col = 31; // NOT USED
             dd1Col = 12;
             td1Col = 13;
-            sex2Col = 14;
+            sx2Col = 14;
             bd2Col = 15;
             ed2Col = 16;
             t22Col = 17;
@@ -313,20 +314,21 @@ public class TransferController implements Initializable {
             t25Col = 31; // NOT USED
             dd2Col = 20;
             td2Col = 21;
-            entryFee1Col = 22;
+            // Fee columns
+            entryFee1Col  = 22;
             nonrefFee1Col = 23;
             refundFee1Col = 24;
-            comFee1Col = 25;
-            nonrefBalCol = 26;
-            refBalCol = 27;
-            comBalCol = 28;
+            comFee1Col    = 25;
+            nonrefBalCol  = 26;
+            refBalCol     = 27;
+            comBalCol     = 28;
         } else {
             // If neither marker set, use the column values for 5-Level sheets
             t14Col = 11;
             t15Col = 12;
             dd1Col = 13;
             td1Col = 14;
-            sex2Col = 15;
+            sx2Col = 15;
             bd2Col = 16;
             ed2Col = 17;
             t22Col = 18;
@@ -335,13 +337,14 @@ public class TransferController implements Initializable {
             t25Col = 21;
             dd2Col = 22;
             td2Col = 23;
-            entryFee1Col = 24;
+            // Fee columns
+            entryFee1Col  = 24;
             nonrefFee1Col = 25;
             refundFee1Col = 26;
-            comFee1Col = 27;
-            nonrefBalCol = 28;
-            refBalCol = 29;
-            comBalCol = 30;
+            comFee1Col    = 27;
+            nonrefBalCol  = 28;
+            refBalCol     = 29;
+            comBalCol     = 30;
         }
 
         for (int i = 9; i <= sheet.getLastRowNum(); i++) {
@@ -384,7 +387,7 @@ public class TransferController implements Initializable {
 
             // Check if the sex of 1st and 2nd is male, female, or null
             sex1 = gender(row.getCell(6).getStringCellValue());
-            sex2 = gender(row.getCell(sex2Col).getStringCellValue());
+            sex2 = gender(row.getCell(sx2Col).getStringCellValue());
 
             // Get date values from the Birth, Entry, Death, and Termin cells
             bd1 = row.getCell(7).getDateCellValue();
@@ -545,32 +548,32 @@ public class TransferController implements Initializable {
         for (int i = 0; i < residentList.size(); i++) {
             Resident resident = residentList.get(i);
             db +=
-                resident.getRefNo() + "\t" +
-                resident.getLast() + "\t" +
-                resident.getFirst() + "\t" +
-                resident.getUnitNo() + "\t" +
-                resident.getUnitType() + "\t" +
-                resident.getSex1() + "\t" +
-                resident.getSex2() + "\t" +
+                resident.getRefNo()      + "\t" +
+                resident.getLast()       + "\t" +
+                resident.getFirst()      + "\t" +
+                resident.getUnitNo()     + "\t" +
+                resident.getUnitType()   + "\t" +
+                resident.getSex1()       + "\t" +
+                resident.getSex2()       + "\t" +
                 resident.getBirthDate1() + "\t" +
                 resident.getBirthDate2() + "\t" +
                 resident.getEntryDate1() + "\t" +
                 resident.getEntryDate2() + "\t" +
-                resident.getEntryFee1() + "\t" +
-                resident.getEntryFee2() + "\t" +
+                resident.getEntryFee1()  + "\t" +
+                resident.getEntryFee2()  + "\t" +
                 resident.getDeathDate1() + "\t" +
                 resident.getDeathDate2() + "\t" +
-                resident.getTermDate1() + "\t" +
-                resident.getTermDate2() + "\t" +
+                resident.getTermDate1()  + "\t" +
+                resident.getTermDate2()  + "\t" +
                 resident.getNonrefFee1() + "\t" +
                 resident.getNonrefFee2() + "\t" +
                 resident.getRefundFee1() + "\t" +
                 resident.getRefundFee2() + "\t" +
-                resident.getComFee1() + "\t" +
-                resident.getComFee2() + "\t" +
-                resident.getDecline() + "\t" +
-                resident.getFso() + "\t" +
-                resident.getContract() + "\n";
+                resident.getComFee1()    + "\t" +
+                resident.getComFee2()    + "\t" +
+                resident.getDecline()    + "\t" +
+                resident.getFso()        + "\t" +
+                resident.getContract()   + "\n";
         }
 
         // Replace null cells with empty cells
@@ -597,11 +600,11 @@ public class TransferController implements Initializable {
             TransferResident resident = transferList.get(i);
             db +=
                 resident.getRefNo() + "\t" +
-                resident.getLast() + "\t" +
+                resident.getLast()  + "\t" +
                 resident.getFirst() + "\t" +
-                resident.getRes() + "\t" +
-                resident.getInto() + "\t" + 
-                resident.getDate() + "\n";
+                resident.getRes()   + "\t" +
+                resident.getInto()  + "\t" + 
+                resident.getDate()  + "\n";
         }
         
         // Add the RLA value string to the clipboard
@@ -903,7 +906,7 @@ public class TransferController implements Initializable {
         
         XSSFSheet sheet;
         Row row;
-        Amort amort;;
+        Amort amort;
             
         // Create the Amort sheet if it does not exist, otherwise reformat it
         if (workbook.getSheet("AmortTEMPLATE") == null) {
@@ -1022,12 +1025,13 @@ public class TransferController implements Initializable {
 
         // Get the CONTRACT sheet and get the first content row
         XSSFSheet sheet = workbook.getSheet("CONTRACT");
+
         int rowNo = 5;
         int rowBool;
-        Row row = sheet.getRow(rowNo);
+        Row row = sheet.getRow(5);
 
         // Get the "Declining? (Y/N)" column and add the values to their respective index
-        while (row.getCell(4) != null) {
+        while (row != null && row.getCell(4) != null) {
             rowBool = ((row.getCell(4).getStringCellValue().equals("Y")) ? 1 : 0);
             declineList.add(rowBool);
             rowNo++;
