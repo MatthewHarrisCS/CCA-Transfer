@@ -353,7 +353,7 @@ public class TransferController implements Initializable {
 
             // If person 1's last name is null, end the loop 
             // (the end of the list has been reached even if the sheet hasn't)
-            if (row.getCell(1).getStringCellValue().equals("")) {
+            if (row.getCell(1) == null || row.getCell(1).getStringCellValue().equals("")) {
                 break;
             }
 
@@ -421,25 +421,25 @@ public class TransferController implements Initializable {
                 .atZone(ZoneId.systemDefault()).toLocalDate());
             deathDate2 = ((dd2 == null) ? null : dd2.toInstant()
                 .atZone(ZoneId.systemDefault()).toLocalDate());
-            termDate1  = ((td1 == null) ? null : td1.toInstant()
+            termDate1 = ((td1 == null) ? null : td1.toInstant()
                 .atZone(ZoneId.systemDefault()).toLocalDate());
-            termDate2  = ((td2 == null) ? null : td2.toInstant()
+            termDate2 = ((td2 == null) ? null : td2.toInstant()
                 .atZone(ZoneId.systemDefault()).toLocalDate());
-            transfer1to2  = ((t12 == null) ? null : t12.toInstant()
+            transfer1to2 = ((t12 == null) ? null : t12.toInstant()
                 .atZone(ZoneId.systemDefault()).toLocalDate());
-            transfer1to3  = ((t13 == null) ? null : t13.toInstant()
+            transfer1to3 = ((t13 == null) ? null : t13.toInstant()
                 .atZone(ZoneId.systemDefault()).toLocalDate());
-            transfer1to4  = ((t14 == null) ? null : t14.toInstant()
+            transfer1to4 = ((t14 == null) ? null : t14.toInstant()
                 .atZone(ZoneId.systemDefault()).toLocalDate());
-            transfer1to5  = ((t15 == null) ? null : t15.toInstant()
+            transfer1to5 = ((t15 == null) ? null : t15.toInstant()
                 .atZone(ZoneId.systemDefault()).toLocalDate());
-            transfer2to2  = ((t22 == null) ? null : t22.toInstant()
+            transfer2to2 = ((t22 == null) ? null : t22.toInstant()
                 .atZone(ZoneId.systemDefault()).toLocalDate());
-            transfer2to3  = ((t23 == null) ? null : t23.toInstant()
+            transfer2to3 = ((t23 == null) ? null : t23.toInstant()
                 .atZone(ZoneId.systemDefault()).toLocalDate());
-            transfer2to4  = ((t24 == null) ? null : t24.toInstant()
+            transfer2to4 = ((t24 == null) ? null : t24.toInstant()
                 .atZone(ZoneId.systemDefault()).toLocalDate());
-            transfer2to5  = ((t25 == null) ? null : t25.toInstant()
+            transfer2to5 = ((t25 == null) ? null : t25.toInstant()
                 .atZone(ZoneId.systemDefault()).toLocalDate());
             
             // Get fees for person 1 (person 2 always set to 0.0)
@@ -747,8 +747,8 @@ public class TransferController implements Initializable {
         row.createCell(14).setCellValue("Death date of 2nd");
         row.createCell(15).setCellValue("Termin date of 1st");
         row.createCell(16).setCellValue("Termin date of 2nd");
-        row.createCell(17).setCellValue("Nonref entry of 1st");
-        row.createCell(18).setCellValue("Nonref entry of 2nd");
+        row.createCell(17).setCellValue("Nonref entry fee of 1st");
+        row.createCell(18).setCellValue("Nonref entry fee of 2nd");
         row.createCell(19).setCellValue("Refund entry fee of 1st");
         row.createCell(20).setCellValue("Refund entry fee of 2nd");
         row.createCell(21).setCellValue("Commission on fee for 1st insured");

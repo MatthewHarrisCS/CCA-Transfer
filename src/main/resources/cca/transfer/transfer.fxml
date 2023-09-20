@@ -20,22 +20,22 @@
 
 <VBox prefHeight="600.0" prefWidth="765.0" spacing="20.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cca.transfer.TransferController">
    <children>
-      <GridPane alignment="BOTTOM_RIGHT" maxWidth="1.7976931348623157E308" prefHeight="56.0" prefWidth="293.0">
+      <GridPane alignment="BOTTOM_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="60.0" prefWidth="725.0">
         <columnConstraints>
-          <ColumnConstraints hgrow="SOMETIMES" maxWidth="369.0" minWidth="10.0" prefWidth="225.0" />
-          <ColumnConstraints hgrow="SOMETIMES" maxWidth="568.0" minWidth="10.0" prefWidth="500.0" />
+          <ColumnConstraints halignment="LEFT" hgrow="NEVER" maxWidth="1.7976931348623157E308" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" prefWidth="500.0" />
         </columnConstraints>
         <rowConstraints>
-          <RowConstraints vgrow="SOMETIMES" />
-            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints maxHeight="83.0" minHeight="-Infinity" prefHeight="29.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="126.0" prefHeight="126.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <Label minHeight="-Infinity" minWidth="-Infinity" prefWidth="226.0" text="LifeCalc Transfer&#10;Table Generator">
+            <Label alignment="TOP_LEFT" contentDisplay="TOP" minHeight="-Infinity" minWidth="-Infinity" prefHeight="56.0" prefWidth="175.0" text="LifeCalc Transfer&#10;Table Generator" GridPane.valignment="TOP">
                <font>
                   <Font name="Californian FB" size="24.0" />
                </font>
             </Label>
-            <Label fx:id="status" alignment="BOTTOM_RIGHT" wrapText="true" GridPane.columnIndex="1">
+            <Label fx:id="status" alignment="TOP_LEFT" contentDisplay="TOP" textOverrun="CENTER_ELLIPSIS" wrapText="true" GridPane.columnIndex="1">
                <font>
                   <Font name="System Bold" size="12.0" />
                </font>
